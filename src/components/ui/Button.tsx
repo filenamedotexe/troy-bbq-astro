@@ -68,8 +68,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     children,
     ...props
   }, ref) => {
-    const Comp = asChild ? Slot : "button";
-
     // Enhanced accessibility: compute actual disabled state
     const isDisabled = disabled || loading;
 
@@ -98,8 +96,23 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       </svg>
     );
 
+    // When asChild is true, the Slot expects exactly one React element child
+    // Icons and loading state are not compatible with asChild
+    if (asChild) {
+      return (
+        <Slot
+          className={cn(buttonVariants({ variant, size, className }))}
+          ref={ref}
+          {...props}
+        >
+          {children}
+        </Slot>
+      );
+    }
+
+    // Normal button behavior with all features
     return (
-      <Comp
+      <button
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
         disabled={isDisabled}
@@ -119,7 +132,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             {endIcon}
           </span>
         )}
-      </Comp>
+      </button>
     );
   }
 );
