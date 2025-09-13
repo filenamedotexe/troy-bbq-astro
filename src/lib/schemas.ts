@@ -95,6 +95,28 @@ export const contactFormSchema = z.object({
   message: z.string().min(10).max(1000),
 });
 
+// Admin form schemas for catering add-ons
+export const createCateringAddonSchema = z.object({
+  name: z.string().min(1, "Name is required").max(255, "Name must be less than 255 characters"),
+  description: z.string().max(1000, "Description must be less than 1000 characters").optional(),
+  priceCents: z.number().int().min(0, "Price cannot be negative"),
+  isActive: z.boolean().optional().default(true),
+  category: z.string().max(100, "Category must be less than 100 characters").optional(),
+});
+
+export const updateCateringAddonSchema = z.object({
+  name: z.string().min(1, "Name is required").max(255, "Name must be less than 255 characters").optional(),
+  description: z.string().max(1000, "Description must be less than 1000 characters").optional(),
+  priceCents: z.number().int().min(0, "Price cannot be negative").optional(),
+  isActive: z.boolean().optional(),
+  category: z.string().max(100, "Category must be less than 100 characters").optional(),
+});
+
+export const bulkUpdateAddonsSchema = z.object({
+  addonIds: z.array(z.string().uuid()).min(1, "At least one add-on must be selected"),
+  action: z.enum(['activate', 'deactivate', 'delete']),
+});
+
 export type AdminSettingsInput = z.infer<typeof adminSettingsSchema>;
 export type MenuSelectionInput = z.infer<typeof menuSelectionSchema>;
 export type AddOnSelectionInput = z.infer<typeof addOnSelectionSchema>;
@@ -105,3 +127,6 @@ export type CateringQuoteInput = z.infer<typeof cateringQuoteSchema>;
 export type CateringAddonInput = z.infer<typeof cateringAddonSchema>;
 export type QuoteFormInput = z.infer<typeof quoteFormSchema>;
 export type ContactFormInput = z.infer<typeof contactFormSchema>;
+export type CreateCateringAddonInput = z.infer<typeof createCateringAddonSchema>;
+export type UpdateCateringAddonInput = z.infer<typeof updateCateringAddonSchema>;
+export type BulkUpdateAddonsInput = z.infer<typeof bulkUpdateAddonsSchema>;

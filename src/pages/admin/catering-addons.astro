@@ -1,0 +1,12 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CateringAddonsWrapper from '../../components/admin/CateringAddonsWrapper';
+---
+
+<BaseLayout title="Catering Add-Ons Management - Troy BBQ">
+  <div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <CateringAddonsWrapper client:load />
+    </div>
+  </div>
+</BaseLayout>

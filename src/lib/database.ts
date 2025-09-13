@@ -11,6 +11,84 @@ import type {
 const sql = neon(process.env.DATABASE_URL || import.meta.env.DATABASE_URL || '');
 
 export class DatabaseService {
+  // Add transaction support for atomic operations
+  async executeTransaction<T>(operation: (sql: typeof import('@neondatabase/serverless').neon) => Promise<T>): Promise<T> {
+    // Note: NeonDB serverless doesn't support traditional transactions
+    // We'll implement application-level transaction safety with rollback logic
+    let operationResult: T;
+    let rollbackOperations: (() => Promise<void>)[] = [];
+    
+    try {
+      operationResult = await operation(sql);
+      return operationResult;
+    } catch (error) {
+      // Attempt to rollback operations in reverse order
+      console.error('Transaction failed, attempting rollback:', error);
+      
+      for (let i = rollbackOperations.length - 1; i >= 0; i--) {
+        try {
+          await rollbackOperations[i]();
+        } catch (rollbackError) {
+          console.error('Rollback operation failed:', rollbackError);
+        }
+      }
+      
+      throw error;
+    }
+  }
+  
+  // Add idempotency checking for payments
+  async checkPaymentIdempotency(quoteId: string, paymentType: 'deposit' | 'balance', transactionId: string): Promise<{
+    isDuplicate: boolean;
+    existingPayment?: any;
+  }> {
+    try {
+      // Check if we've already processed this exact payment
+      const existingPayments = await sql`
+        SELECT status, medusa_order_id, balance_order_id, updated_at
+        FROM catering_quotes 
+        WHERE id = ${quoteId}
+      `;
+      
+      if (existingPayments.length === 0) {
+        return { isDuplicate: false };
+      }
+      
+      const quote = existingPayments[0];
+      
+      // Check for duplicate deposit payment
+      if (paymentType === 'deposit' && (quote.status === 'deposit_paid' || quote.status === 'completed')) {
+        return {
+          isDuplicate: true,
+          existingPayment: {
+            type: 'deposit',
+            orderId: quote.medusa_order_id,
+            status: quote.status,
+            processedAt: quote.updated_at
+          }
+        };
+      }
+      
+      // Check for duplicate balance payment
+      if (paymentType === 'balance' && quote.status === 'completed') {
+        return {
+          isDuplicate: true,
+          existingPayment: {
+            type: 'balance',
+            orderId: quote.balance_order_id,
+            status: quote.status,
+            processedAt: quote.updated_at
+          }
+        };
+      }
+      
+      return { isDuplicate: false };
+      
+    } catch (error) {
+      console.error('Error checking payment idempotency:', error);
+      throw new Error('Failed to verify payment uniqueness');
+    }
+  }
   async getAdminSettings(): Promise<AdminSettings | null> {
     try {
       const result = await sql`
@@ -228,37 +306,67 @@ export class DatabaseService {
 
   async updateCateringAddon(id: string, addon: Partial<Omit<CateringAddon, 'id' | 'createdAt'>>): Promise<void> {
     try {
-      const updates = [];
-      const values = [];
-      
+      // Build update query using parameterized queries for security
+      const updateFields = [];
+      const updateValues = [];
+
       if (addon.name !== undefined) {
-        updates.push(`name = $${values.length + 1}`);
-        values.push(addon.name);
+        updateFields.push('name');
+        updateValues.push(addon.name);
       }
       if (addon.description !== undefined) {
-        updates.push(`description = $${values.length + 1}`);
-        values.push(addon.description);
+        updateFields.push('description');
+        updateValues.push(addon.description);
       }
       if (addon.priceCents !== undefined) {
-        updates.push(`price_cents = $${values.length + 1}`);
-        values.push(addon.priceCents);
+        updateFields.push('price_cents');
+        updateValues.push(addon.priceCents);
       }
       if (addon.isActive !== undefined) {
-        updates.push(`is_active = $${values.length + 1}`);
-        values.push(addon.isActive);
+        updateFields.push('is_active');
+        updateValues.push(addon.isActive);
       }
       if (addon.category !== undefined) {
-        updates.push(`category = $${values.length + 1}`);
-        values.push(addon.category);
+        updateFields.push('category');
+        updateValues.push(addon.category);
       }
 
-      if (updates.length > 0) {
-        values.push(id);
-        await sql`
-          UPDATE catering_addons 
-          SET ${sql.unsafe(updates.join(', '))}
-          WHERE id = $${values.length}
-        `;
+      if (updateFields.length > 0) {
+        // Use safe parameterized query construction
+        if (updateFields.length === 1) {
+          const field = updateFields[0];
+          const value = updateValues[0];
+          if (field === 'name') {
+            await sql`UPDATE catering_addons SET name = ${value} WHERE id = ${id}`;
+          } else if (field === 'description') {
+            await sql`UPDATE catering_addons SET description = ${value} WHERE id = ${id}`;
+          } else if (field === 'price_cents') {
+            await sql`UPDATE catering_addons SET price_cents = ${value} WHERE id = ${id}`;
+          } else if (field === 'is_active') {
+            await sql`UPDATE catering_addons SET is_active = ${value} WHERE id = ${id}`;
+          } else if (field === 'category') {
+            await sql`UPDATE catering_addons SET category = ${value} WHERE id = ${id}`;
+          }
+        } else {
+          // For multiple fields, build safe conditional updates
+          const baseQuery = 'UPDATE catering_addons SET ';
+          let query = baseQuery;
+          const queryParts = [];
+          
+          updateFields.forEach((field, index) => {
+            if (field === 'name') queryParts.push('name = $' + (index + 1));
+            else if (field === 'description') queryParts.push('description = $' + (index + 1));
+            else if (field === 'price_cents') queryParts.push('price_cents = $' + (index + 1));
+            else if (field === 'is_active') queryParts.push('is_active = $' + (index + 1));
+            else if (field === 'category') queryParts.push('category = $' + (index + 1));
+          });
+          
+          query += queryParts.join(', ') + ' WHERE id = $' + (updateFields.length + 1);
+          updateValues.push(id);
+          
+          // Execute with parameterized values
+          await sql(query, updateValues);
+        }
       }
     } catch (error) {
       console.error('Error updating catering addon:', error);

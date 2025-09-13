@@ -1,0 +1,135 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CateringQuoteWrapper from '../components/catering/CateringQuoteWrapper.tsx';
+import { Button } from '../components/ui/Button';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card';
+---
+
+<BaseLayout title="Catering Services - Troy BBQ">
+  <!-- Hero Section -->
+  <section class="relative bg-gradient-to-r from-amber-900 to-orange-900 text-white py-16">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-4xl mx-auto text-center">
+        <h1 class="text-4xl md:text-5xl font-bold mb-6">
+          Professional BBQ Catering
+        </h1>
+        <p class="text-xl md:text-2xl mb-8 text-gray-200">
+          Let us bring authentic BBQ to your next corporate event, wedding, or private party
+        </p>
+        <div class="flex justify-center">
+          <Button size="lg" variant="secondary" asChild>
+            <a href="#quote-builder">Get Your Quote</a>
+          </Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Overview -->
+  <section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          Our Catering Services
+        </h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          From intimate gatherings to large corporate events, we provide full-service BBQ catering
+        </p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Corporate Events</CardTitle>
+            <CardDescription>
+              Professional catering for office parties, meetings, and corporate gatherings with setup and service
+            </CardDescription>
+          </CardHeader>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Private Parties</CardTitle>
+            <CardDescription>
+              Backyard BBQs, birthday celebrations, and family reunions with our signature smoked meats
+            </CardDescription>
+          </CardHeader>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Weddings & Events</CardTitle>
+            <CardDescription>
+              Complete wedding catering with appetizers, entrees, sides, and professional staff
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quote Builder Section -->
+  <section id="quote-builder" class="py-16 bg-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          Get Your Catering Quote
+        </h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          Tell us about your event and we'll create a custom quote with pricing and menu options
+        </p>
+      </div>
+      
+      <div class="max-w-4xl mx-auto">
+        <CateringQuoteWrapper client:load />
+      </div>
+    </div>
+  </section>
+
+  <!-- Additional Info -->
+  <section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <h3 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
+            What's Included
+          </h3>
+          <ul class="space-y-4 text-lg text-gray-600">
+            <li class="flex items-start">
+              <span class="text-orange-600 mr-3">✓</span>
+              Professional setup and breakdown
+            </li>
+            <li class="flex items-start">
+              <span class="text-orange-600 mr-3">✓</span>
+              Serving equipment and utensils
+            </li>
+            <li class="flex items-start">
+              <span class="text-orange-600 mr-3">✓</span>
+              Chafing dishes and warmers
+            </li>
+            <li class="flex items-start">
+              <span class="text-orange-600 mr-3">✓</span>
+              Napkins, plates, and cups
+            </li>
+            <li class="flex items-start">
+              <span class="text-orange-600 mr-3">✓</span>
+              Professional serving staff (for larger events)
+            </li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
+            Delivery & Service Area
+          </h3>
+          <p class="text-lg text-gray-600 mb-4">
+            We deliver within a 50-mile radius of Troy, NY. Delivery fees are calculated based on distance and event complexity.
+          </p>
+          <p class="text-lg text-gray-600">
+            For events outside our standard delivery area, please contact us directly for custom arrangements.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

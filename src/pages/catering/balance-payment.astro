@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BalancePaymentWrapper from '../../components/catering/BalancePaymentWrapper.tsx';
+
+// Extract query parameters for quote ID and token
+const url = new URL(Astro.request.url);
+const quoteId = url.searchParams.get('quote');
+const token = url.searchParams.get('token');
+
+// If no quote ID is provided, redirect to catering page
+if (!quoteId) {
+  return Astro.redirect('/catering');
+}
+
+const pageTitle = 'Balance Payment - Troy BBQ Catering';
+const pageDescription = 'Complete your catering order with the final balance payment';
+---
+
+<BaseLayout title={pageTitle} description={pageDescription}>
+  <main class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Page Header -->
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+          Complete Your Catering Order
+        </h1>
+        <p class="text-gray-600 max-w-2xl mx-auto">
+          Your deposit has been received. Complete the final balance payment to confirm your catering service.
+        </p>
+      </div>
+
+      <!-- Balance Payment Component -->
+      <BalancePaymentWrapper 
+        quoteId={quoteId} 
+        token={token}
+        client:load
+      />
+
+      <!-- Support Information -->
+      <div class="mt-12 bg-white rounded-lg shadow-sm border p-6">
+        <div class="text-center">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">
+            Need Help?
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div>
+              <p class="font-medium text-gray-900">Email Support</p>
+              <p class="text-gray-600">catering@troybbq.com</p>
+            </div>
+            <div>
+              <p class="font-medium text-gray-900">Phone Support</p>
+              <p class="text-gray-600">(555) 123-4567</p>
+            </div>
+          </div>
+          <p class="text-xs text-gray-500 mt-4">
+            Support hours: Monday - Friday 8AM - 6PM, Saturday 9AM - 4PM
+          </p>
+        </div>
+      </div>
+
+      <!-- Security Notice -->
+      <div class="mt-6 text-center">
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full text-xs text-gray-600">
+          <span>🔒</span>
+          <span>Secure payment processing</span>
+          <span>•</span>
+          <span>SSL encrypted</span>
+          <span>•</span>
+          <span>PCI compliant</span>
+        </div>
+      </div>
+    </div>
+  </main>
+</BaseLayout>

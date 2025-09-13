@@ -282,3 +282,56 @@ export interface QuoteFormData {
   menuSelections: MenuSelection[];
   addOns: AddOnSelection[];
 }
+
+// Payment Types
+export interface PaymentResult {
+  success: boolean;
+  paymentIntent?: {
+    id: string;
+    amount: number;
+    currency: string;
+    status: string;
+    client_secret?: string;
+  };
+  transactionId?: string;
+  provider?: string;
+  error?: string;
+  orderId?: string;
+  quoteId?: string;
+}
+
+export interface PaymentStatus {
+  quoteId: string;
+  depositPaid: boolean;
+  balancePaid?: boolean;
+  status: QuoteStatus;
+  depositAmount: number;
+  balanceAmount: number;
+  totalAmount?: number;
+  medusaOrderId?: string;
+  balanceOrderId?: string;
+  eventDate: string;
+  timeline?: {
+    hoursUntilEvent: number;
+    paymentRequired: boolean;
+    eventPassed: boolean;
+  };
+}
+
+export interface PaymentWorkflowState {
+  currentPhase: 'deposit' | 'balance' | 'completed';
+  progress: {
+    deposit: {
+      status: 'pending' | 'processing' | 'completed' | 'failed';
+      transactionId?: string;
+      completedAt?: Date;
+      error?: string;
+    };
+    balance: {
+      status: 'pending' | 'processing' | 'completed' | 'failed';
+      transactionId?: string;
+      completedAt?: Date;
+      error?: string;
+    };
+  };
+}
