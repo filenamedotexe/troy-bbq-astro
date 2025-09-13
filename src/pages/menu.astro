@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProductCatalogWrapper from '../components/products/ProductCatalogWrapper';
+---
+
+<BaseLayout title="Menu - Troy BBQ">
+  <!-- Hero Section -->
+  <section class="relative bg-gradient-to-r from-orange-800 to-red-800 text-white py-16">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-4xl mx-auto text-center">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          Our Menu
+        </h1>
+        <p class="text-xl md:text-2xl text-orange-100">
+          Authentic BBQ made with passion, smoked daily with hickory and oak
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Menu Categories Introduction -->
+  <section class="py-12 bg-gray-50">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-3xl font-bold text-gray-900 mb-6">
+          Discover Our BBQ Favorites
+        </h2>
+        <p class="text-lg text-gray-600 mb-8">
+          From fall-off-the-bone ribs to tender brisket, every item on our menu is crafted with 
+          three generations of BBQ expertise. Use our filters to find exactly what you're craving.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Product Catalog -->
+  <section class="py-12">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <ProductCatalogWrapper client:load />
+    </div>
+  </section>
+
+  <!-- Call to Action -->
+  <section class="py-16 bg-primary text-primary-foreground">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">
+        Can't Decide What to Order?
+      </h2>
+      <p class="text-lg mb-8 text-primary-foreground/90">
+        Our BBQ experts are here to help! Contact us for recommendations or custom orders.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a 
+          href="/contact" 
+          class="inline-flex items-center justify-center px-6 py-3 bg-secondary text-secondary-foreground font-medium rounded-md hover:bg-secondary/90 transition-colors"
+        >
+          Contact Us
+        </a>
+        <a 
+          href="/catering" 
+          class="inline-flex items-center justify-center px-6 py-3 border border-primary-foreground/20 text-primary-foreground font-medium rounded-md hover:bg-primary-foreground/10 transition-colors"
+        >
+          Catering Services
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

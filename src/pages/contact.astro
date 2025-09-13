@@ -1,0 +1,245 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
+import ContactFormWrapper from '../components/contact/ContactFormWrapper';
+---
+
+<BaseLayout title="Contact Us - Troy BBQ">
+  <!-- Hero Section -->
+  <section class="relative bg-gradient-to-r from-orange-800 to-red-800 text-white py-16">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-4xl mx-auto text-center">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          Get in Touch
+        </h1>
+        <p class="text-xl md:text-2xl text-orange-100">
+          We'd love to hear from you. Visit us, call us, or send us a message.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Information -->
+  <section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-6xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Location -->
+          <Card>
+            <CardHeader class="text-center">
+              <div class="text-4xl mb-4">📍</div>
+              <CardTitle>Visit Our Restaurant</CardTitle>
+            </CardHeader>
+            <CardContent class="text-center space-y-2">
+              <p class="font-medium">123 Main Street</p>
+              <p>Troy, NY 12180</p>
+              <p class="text-sm text-gray-600 mt-4">
+                Located in downtown Troy, just minutes from RPI campus
+              </p>
+            </CardContent>
+          </Card>
+
+          <!-- Contact -->
+          <Card>
+            <CardHeader class="text-center">
+              <div class="text-4xl mb-4">📞</div>
+              <CardTitle>Call or Text</CardTitle>
+            </CardHeader>
+            <CardContent class="text-center space-y-2">
+              <p class="font-medium text-lg">(518) 555-BBQ1</p>
+              <p class="text-sm text-gray-600">Phone & Text</p>
+              <p class="font-medium mt-4">info@troybbq.com</p>
+              <p class="text-sm text-gray-600">Email</p>
+            </CardContent>
+          </Card>
+
+          <!-- Hours -->
+          <Card>
+            <CardHeader class="text-center">
+              <div class="text-4xl mb-4">🕒</div>
+              <CardTitle>Hours</CardTitle>
+            </CardHeader>
+            <CardContent class="space-y-2">
+              <div class="flex justify-between">
+                <span>Monday - Thursday</span>
+                <span>11am - 9pm</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Friday - Saturday</span>
+                <span>11am - 10pm</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Sunday</span>
+                <span>12pm - 8pm</span>
+              </div>
+              <p class="text-sm text-gray-600 mt-4 text-center">
+                Call ahead for large orders
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Form and Map -->
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-6xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <!-- Contact Form -->
+          <div>
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">
+              Send Us a Message
+            </h2>
+            <p class="text-gray-600 mb-8">
+              Have a question about our menu, catering services, or want to make a reservation? 
+              We'd love to hear from you!
+            </p>
+            
+            <ContactFormWrapper client:load />
+          </div>
+
+          <!-- Map Placeholder -->
+          <div>
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">
+              Find Us
+            </h2>
+            <div class="bg-gray-200 rounded-lg h-96 flex items-center justify-center mb-6">
+              <div class="text-center text-gray-600">
+                <div class="text-4xl mb-4">🗺️</div>
+                <p class="font-medium">Interactive Map</p>
+                <p class="text-sm">123 Main Street, Troy, NY 12180</p>
+              </div>
+            </div>
+            <div class="space-y-4">
+              <Card>
+                <CardContent class="p-4">
+                  <h3 class="font-semibold mb-2">Parking</h3>
+                  <p class="text-sm text-gray-600">
+                    Free parking available in our lot behind the building. 
+                    Street parking also available on Main Street.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent class="p-4">
+                  <h3 class="font-semibold mb-2">Public Transportation</h3>
+                  <p class="text-sm text-gray-600">
+                    CDTA Bus Route 286 stops directly in front of our restaurant. 
+                    Troy Union Station is a 5-minute walk.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+          How Can We Serve You?
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
+          <Card>
+            <CardHeader>
+              <CardTitle class="flex items-center gap-3">
+                <span class="text-2xl">🍽️</span>
+                Dine-In & Takeout
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p class="text-gray-600 mb-4">
+                Enjoy our full menu in our cozy restaurant or call ahead for takeout. 
+                We recommend calling 30 minutes before pickup for hot, fresh food.
+              </p>
+              <a 
+                href="/menu" 
+                class="inline-flex items-center text-primary hover:text-primary/80 font-medium"
+              >
+                View Menu →
+              </a>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle class="flex items-center gap-3">
+                <span class="text-2xl">🎉</span>
+                Catering Services
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p class="text-gray-600 mb-4">
+                From corporate events to wedding receptions, we bring authentic BBQ 
+                to your special occasions. Custom menus and full-service options available.
+              </p>
+              <a 
+                href="/catering" 
+                class="inline-flex items-center text-primary hover:text-primary/80 font-medium"
+              >
+                Get Quote →
+              </a>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">
+          Frequently Asked Questions
+        </h2>
+        <div class="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle class="text-lg">Do you take reservations?</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p class="text-gray-600">
+                We operate on a first-come, first-served basis for regular dining. However, 
+                we do accept reservations for groups of 8 or more. Call us at (518) 555-BBQ1 
+                to make arrangements.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle class="text-lg">How far in advance should I book catering?</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p class="text-gray-600">
+                We recommend booking catering services at least 2 weeks in advance for 
+                large events. For smaller gatherings (under 25 people), we can often 
+                accommodate with 48-72 hours notice.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle class="text-lg">Do you offer vegetarian or gluten-free options?</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p class="text-gray-600">
+                Yes! We have several vegetarian sides and can prepare gluten-free versions 
+                of many dishes. Please let us know about dietary restrictions when ordering, 
+                and we'll be happy to accommodate your needs.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

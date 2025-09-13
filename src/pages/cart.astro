@@ -1,0 +1,10 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CartPageWrapper from '../components/cart/CartPageWrapper';
+---
+
+<BaseLayout title="Shopping Cart - Troy BBQ">
+  <div class="min-h-screen bg-gray-50 py-8">
+    <CartPageWrapper client:load />
+  </div>
+</BaseLayout>

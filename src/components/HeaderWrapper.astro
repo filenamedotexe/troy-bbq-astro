@@ -1,0 +1,11 @@
+---
+import Header from './layout/Header';
+
+interface Props {
+  cartItemCount?: number;
+}
+
+const { cartItemCount = 0 } = Astro.props;
+---
+
+<Header client:load cartItemCount={cartItemCount} />

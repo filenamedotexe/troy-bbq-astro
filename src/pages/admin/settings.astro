@@ -1,0 +1,12 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AdminSettingsWrapper from '../../components/admin/AdminSettingsWrapper';
+---
+
+<BaseLayout title="Admin Settings - Troy BBQ">
+  <div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <AdminSettingsWrapper client:load />
+    </div>
+  </div>
+</BaseLayout>

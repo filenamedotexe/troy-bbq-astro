@@ -1,0 +1,10 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CheckoutWrapper from '../components/checkout/CheckoutWrapper';
+---
+
+<BaseLayout title="Checkout - Troy BBQ">
+  <div class="min-h-screen bg-gray-50 py-8">
+    <CheckoutWrapper client:load />
+  </div>
+</BaseLayout>

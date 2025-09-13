@@ -1,0 +1,203 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
+---
+
+<BaseLayout title="About Us - Troy BBQ">
+  <!-- Hero Section -->
+  <section class="relative bg-gradient-to-r from-orange-800 to-red-800 text-white py-16">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-4xl mx-auto text-center">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          Our Story
+        </h1>
+        <p class="text-xl md:text-2xl text-orange-100">
+          Three generations of BBQ tradition in Troy, New York
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Story Section -->
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-4xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div>
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">
+              Family Tradition Since 1985
+            </h2>
+            <p class="text-lg text-gray-600 mb-6">
+              What started as a small backyard operation has grown into Troy's most beloved BBQ destination. 
+              Our founder, Big Jim Thompson, began smoking meats in his backyard for family gatherings, 
+              quickly earning a reputation for the most tender, flavorful BBQ in the Capital Region.
+            </p>
+            <p class="text-lg text-gray-600 mb-6">
+              Today, his grandson carries on the tradition, using the same time-tested recipes and techniques 
+              that have made Troy BBQ a local institution. Every piece of meat is hand-selected, seasoned 
+              with our signature rub, and slow-smoked over hickory and oak for that perfect bark and smoky flavor.
+            </p>
+            <p class="text-lg text-gray-600">
+              We're not just a restaurant – we're a gathering place where friends become family and every 
+              meal is a celebration of authentic American BBQ tradition.
+            </p>
+          </div>
+          <div class="space-y-6">
+            <Card>
+              <CardContent class="p-6">
+                <div class="text-center">
+                  <div class="text-3xl font-bold text-primary mb-2">40+</div>
+                  <div class="text-gray-600">Years of Excellence</div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent class="p-6">
+                <div class="text-center">
+                  <div class="text-3xl font-bold text-primary mb-2">3</div>
+                  <div class="text-gray-600">Generations</div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent class="p-6">
+                <div class="text-center">
+                  <div class="text-3xl font-bold text-primary mb-2">1000+</div>
+                  <div class="text-gray-600">Events Catered</div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values Section -->
+  <section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Our Values
+          </h2>
+          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            The principles that guide everything we do, from selecting our ingredients to serving our community
+          </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <Card class="text-center">
+            <CardHeader>
+              <div class="text-4xl mb-4">🔥</div>
+              <CardTitle>Authentic Process</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p class="text-gray-600">
+                We never take shortcuts. Every piece of meat is hand-rubbed and slow-smoked the traditional way, 
+                just like Big Jim taught us.
+              </p>
+            </CardContent>
+          </Card>
+          
+          <Card class="text-center">
+            <CardHeader>
+              <div class="text-4xl mb-4">🥩</div>
+              <CardTitle>Quality Ingredients</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p class="text-gray-600">
+                We source only the finest cuts from local farms and trusted suppliers, ensuring every bite 
+                meets our exacting standards.
+              </p>
+            </CardContent>
+          </Card>
+          
+          <Card class="text-center">
+            <CardHeader>
+              <div class="text-4xl mb-4">❤️</div>
+              <CardTitle>Community First</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p class="text-gray-600">
+                Troy is our home, and we're proud to serve our neighbors. From fundraising events to 
+                family celebrations, we're here for our community.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team Section -->
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+          Meet the Pitmasters
+        </h2>
+        <p class="text-lg text-gray-600 mb-12">
+          The dedicated team behind every perfect plate
+        </p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <Card>
+            <CardContent class="p-8 text-center">
+              <div class="w-24 h-24 bg-orange-500 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-2xl font-bold">
+                JT
+              </div>
+              <h3 class="text-xl font-semibold mb-2">Junior Thompson</h3>
+              <p class="text-orange-600 font-medium mb-3">Head Pitmaster & Owner</p>
+              <p class="text-gray-600">
+                Third-generation pitmaster carrying on his grandfather's legacy. 
+                Junior has perfected the art of BBQ over 20 years of dedication.
+              </p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent class="p-8 text-center">
+              <div class="w-24 h-24 bg-red-500 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-2xl font-bold">
+                SM
+              </div>
+              <h3 class="text-xl font-semibold mb-2">Sarah Martinez</h3>
+              <p class="text-red-600 font-medium mb-3">Executive Chef</p>
+              <p class="text-gray-600">
+                Culinary school graduate who brings innovation to tradition. 
+                Sarah manages our kitchen operations and develops our signature sides.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action -->
+  <section class="py-16 bg-primary text-primary-foreground">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">
+        Taste the Tradition
+      </h2>
+      <p class="text-lg mb-8 text-primary-foreground/90 max-w-2xl mx-auto">
+        Experience three generations of BBQ expertise. Visit us today or let us bring 
+        our authentic flavors to your next event.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a 
+          href="/menu" 
+          class="inline-flex items-center justify-center px-6 py-3 bg-secondary text-secondary-foreground font-medium rounded-md hover:bg-secondary/90 transition-colors"
+        >
+          View Our Menu
+        </a>
+        <a 
+          href="/contact" 
+          class="inline-flex items-center justify-center px-6 py-3 border border-primary-foreground/20 text-primary-foreground font-medium rounded-md hover:bg-primary-foreground/10 transition-colors"
+        >
+          Visit Our Restaurant
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
