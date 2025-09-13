@@ -6,22 +6,6 @@ import { createAdminRoute, handleCORSPreflight } from '../../../../lib/middlewar
 // GET /api/admin/products - List products with filtering and pagination
 export const GET: APIRoute = createAdminRoute(async ({ request, url }) => {
   try {
-    // Check authentication
-    if (!(await isAuthenticated(request))) {
-      return new Response(JSON.stringify({
-        success: false,
-        error: 'Unauthorized'
-      }), {
-        status: 401,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-        }
-      });
-    }
-
     // Parse query parameters
     const searchParams = url.searchParams;
     const queryParams: any = {};
@@ -128,27 +112,11 @@ export const GET: APIRoute = createAdminRoute(async ({ request, url }) => {
       }
     });
   }
-};
+});
 
 // POST /api/admin/products - Create a new product
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = createAdminRoute(async ({ request }) => {
   try {
-    // Check authentication
-    if (!(await isAuthenticated(request))) {
-      return new Response(JSON.stringify({
-        success: false,
-        error: 'Unauthorized'
-      }), {
-        status: 401,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-        }
-      });
-    }
-
     // Parse request body
     const body = await request.json();
 
@@ -221,7 +189,7 @@ export const POST: APIRoute = async ({ request }) => {
       }
     });
   }
-};
+});
 
 // OPTIONS /api/admin/products - Handle CORS preflight
 export const OPTIONS: APIRoute = async () => {

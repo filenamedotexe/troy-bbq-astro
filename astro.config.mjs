@@ -154,7 +154,7 @@ export default defineConfig({
           drop_console: true,
           drop_debugger: true,
           pure_funcs: ['console.log', 'console.info', 'console.debug'],
-          remove_dead_code: true,
+          dead_code: true,
           reduce_vars: true,
           collapse_vars: true,
           inline: 2

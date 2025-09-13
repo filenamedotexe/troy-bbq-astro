@@ -372,7 +372,7 @@ function getContentSecurityPolicy(isProduction: boolean): string {
     .map(([directive, sources]) => {
       if (Array.isArray(sources) && sources.length > 0) {
         return `${directive} ${sources.join(' ')}`;
-      } else if (sources === []) {
+      } else if (Array.isArray(sources) && sources.length === 0) {
         return directive;
       }
       return null;

@@ -2,9 +2,9 @@ import type { APIRoute } from 'astro';
 import { writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import { join } from 'path';
-import { createAdminRoute } from '../../../lib/middleware';
-import { FileUploadSecurityService, FILE_UPLOAD_CONFIG } from '../../../lib/fileUploadSecurity';
-import { getClientIP } from '../../../lib/auth';
+import { createAdminRoute } from '../../../../lib/middleware';
+import { FileUploadSecurityService, FILE_UPLOAD_CONFIG } from '../../../../lib/fileUploadSecurity';
+import { getClientIP } from '../../../../lib/auth';
 
 // POST /api/admin/upload - Handle secure file uploads
 export const POST: APIRoute = createAdminRoute(async ({ request }) => {
