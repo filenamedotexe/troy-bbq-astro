@@ -1,0 +1,63 @@
+---
+// This page handles unsubscribe via URL parameters
+const { url } = Astro;
+const token = url.searchParams.get('token');
+
+if (token) {
+  // Redirect to the API endpoint to handle the unsubscribe
+  return Astro.redirect(`/api/email-preferences/unsubscribe?token=${token}`);
+}
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unsubscribe - Troy BBQ</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      text-align: center;
+      background: #f8f9fa;
+      padding: 40px;
+      border-radius: 8px;
+      border: 1px solid #e9ecef;
+    }
+    .error {
+      color: #dc3545;
+    }
+    .brand {
+      color: #8B4513;
+      margin-bottom: 20px;
+    }
+    a {
+      color: #8B4513;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="brand">Troy BBQ</h1>
+    <h2 class="error">⚠️ Invalid Unsubscribe Link</h2>
+    <p>The unsubscribe link you clicked appears to be missing required information.</p>
+    <p>If you wish to unsubscribe from our emails, please contact us directly:</p>
+    <p>
+      <strong>Email:</strong> <a href="mailto:support@troybbq.com">support@troybbq.com</a><br>
+      <strong>Phone:</strong> <a href="tel:555-123-4567">(555) 123-4567</a>
+    </p>
+    <hr>
+    <p><a href="/">← Return to Troy BBQ Homepage</a></p>
+  </div>
+</body>
+</html>

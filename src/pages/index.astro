@@ -2,9 +2,30 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { Button } from '../components/ui/Button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card';
+
+// SEO-optimized homepage metadata
+const title = "Troy BBQ - Authentic BBQ & Catering | Troy, NY | Since 1985";
+const description = "Experience Troy, NY's finest BBQ restaurant & catering since 1985. Authentic smoked meats, family recipes, and professional event catering. Order online or visit us today!";
+const keywords = "Troy BBQ, barbecue restaurant Troy NY, catering Troy NY, smoked meat, authentic BBQ, family owned restaurant, event catering, corporate catering, wedding catering, BBQ delivery";
+
+// Structured data for homepage
+const homepageStructuredData = {
+  breadcrumbs: [
+    { name: "Home", url: "https://troybbq.com/" }
+  ]
+};
 ---
 
-<BaseLayout title="Troy BBQ - Authentic BBQ & Catering">
+<BaseLayout 
+  title={title}
+  description={description}
+  keywords={keywords}
+  ogImage="/images/troy-bbq-hero.jpg"
+  ogType="business.business"
+  structuredDataType="restaurant"
+  structuredData={homepageStructuredData}
+  pageType="homepage"
+>
   <!-- Hero Section -->
   <section class="relative bg-gradient-to-r from-orange-900 to-red-900 text-white py-20">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">

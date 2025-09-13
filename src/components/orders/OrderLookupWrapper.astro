@@ -1,0 +1,56 @@
+---
+// Astro wrapper for the OrderLookup React component
+---
+
+<div id="order-lookup-container" class="order-lookup-wrapper">
+  <!-- React component will be mounted here -->
+</div>
+
+<script>
+  import { OrderLookup } from './OrderLookup';
+  import React from 'react';
+  import { createRoot } from 'react-dom/client';
+
+  // Mount the React component when the page loads
+  document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('order-lookup-container');
+    if (container) {
+      const root = createRoot(container);
+      root.render(React.createElement(OrderLookup, {
+        className: 'w-full',
+        showOrderDetails: true
+      }));
+    }
+  });
+</script>
+
+<style>
+  .order-lookup-wrapper {
+    width: 100%;
+    min-height: 400px;
+  }
+
+  /* Ensure proper styling for the React components */
+  .order-lookup-wrapper :global(.card) {
+    @apply bg-white shadow-sm border border-gray-200 rounded-lg;
+  }
+
+  .order-lookup-wrapper :global(.badge) {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .order-lookup-wrapper :global(.button) {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors;
+  }
+
+  .order-lookup-wrapper :global(.input) {
+    @apply flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm;
+  }
+
+  /* Mobile responsive adjustments */
+  @media (max-width: 768px) {
+    .order-lookup-wrapper {
+      padding: 0;
+    }
+  }
+</style>

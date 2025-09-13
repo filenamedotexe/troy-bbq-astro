@@ -1,0 +1,194 @@
+---
+// Astro wrapper for the OrderTracker React component
+interface Props {
+  orderId: string;
+  showCustomerInfo?: boolean;
+}
+
+const { orderId, showCustomerInfo = false } = Astro.props;
+---
+
+<div 
+  id="order-tracker-container" 
+  class="order-tracker-wrapper"
+  data-order-id={orderId}
+  data-show-customer-info={showCustomerInfo}
+>
+  <!-- Loading placeholder -->
+  <div class="loading-placeholder">
+    <div class="animate-pulse space-y-6">
+      <!-- Order header placeholder -->
+      <div class="bg-white rounded-lg shadow-sm p-6">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <div class="h-8 bg-gray-200 rounded w-48 mb-2"></div>
+            <div class="h-6 bg-gray-200 rounded w-24"></div>
+          </div>
+          <div class="h-4 bg-gray-200 rounded w-16"></div>
+        </div>
+        <div class="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+        <div class="h-6 bg-gray-200 rounded w-64"></div>
+      </div>
+
+      <!-- Timeline placeholder -->
+      <div class="bg-white rounded-lg shadow-sm p-6">
+        <div class="h-6 bg-gray-200 rounded w-32 mb-6"></div>
+        <div class="space-y-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} class="flex items-center gap-4">
+              <div class="w-4 h-4 bg-gray-200 rounded-full"></div>
+              <div class="flex-1">
+                <div class="h-5 bg-gray-200 rounded w-32 mb-1"></div>
+                <div class="h-4 bg-gray-200 rounded w-48"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Order items placeholder -->
+      <div class="bg-white rounded-lg shadow-sm p-6">
+        <div class="h-6 bg-gray-200 rounded w-32 mb-4"></div>
+        <div class="space-y-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} class="flex items-center gap-4 py-2">
+              <div class="w-12 h-12 bg-gray-200 rounded-lg"></div>
+              <div class="flex-1">
+                <div class="h-5 bg-gray-200 rounded w-40 mb-1"></div>
+                <div class="h-4 bg-gray-200 rounded w-24"></div>
+              </div>
+              <div class="h-4 bg-gray-200 rounded w-16"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { OrderTracker } from './OrderTracker';
+  import React from 'react';
+  import { createRoot } from 'react-dom/client';
+
+  // Mount the React component when the page loads
+  document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('order-tracker-container');
+    if (container) {
+      const orderId = container.getAttribute('data-order-id');
+      const showCustomerInfo = container.getAttribute('data-show-customer-info') === 'true';
+
+      if (!orderId) {
+        console.error('Order ID not provided to OrderTracker');
+        return;
+      }
+
+      // Hide loading placeholder
+      const placeholder = container.querySelector('.loading-placeholder');
+      if (placeholder) {
+        placeholder.style.display = 'none';
+      }
+
+      const root = createRoot(container);
+      root.render(React.createElement(OrderTracker, {
+        orderId: orderId,
+        showCustomerInfo: showCustomerInfo,
+        className: 'w-full'
+      }));
+    }
+  });
+
+  // Listen for refresh events from the parent page
+  window.addEventListener('refreshOrder', (event) => {
+    const container = document.getElementById('order-tracker-container');
+    if (container && event.detail?.orderId) {
+      // Trigger a refresh in the React component
+      container.dispatchEvent(new CustomEvent('refresh', {
+        detail: { orderId: event.detail.orderId }
+      }));
+    }
+  });
+</script>
+
+<style>
+  .order-tracker-wrapper {
+    width: 100%;
+    min-height: 600px;
+  }
+
+  /* Loading placeholder styles */
+  .loading-placeholder {
+    padding: 0;
+  }
+
+  /* Ensure proper styling for the React components */
+  .order-tracker-wrapper :global(.card) {
+    @apply bg-white shadow-sm border border-gray-200 rounded-lg;
+  }
+
+  .order-tracker-wrapper :global(.badge) {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .order-tracker-wrapper :global(.button) {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors px-4 py-2;
+  }
+
+  /* Components use Tailwind classes directly in JSX */
+
+  /* Button styles */
+  .order-tracker-wrapper :global(.button.variant-outline) {
+    @apply border border-gray-300 bg-white text-gray-700 hover:bg-gray-50;
+  }
+
+  .order-tracker-wrapper :global(.button) {
+    @apply bg-blue-600 text-white hover:bg-blue-700;
+  }
+
+  /* Timeline styles */
+  .order-tracker-wrapper :global(.timeline-line) {
+    @apply absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200;
+  }
+
+  .order-tracker-wrapper :global(.timeline-node) {
+    @apply absolute left-4 w-4 h-4 rounded-full border-2 z-10;
+  }
+
+  /* Mobile responsive adjustments */
+  @media (max-width: 768px) {
+    .order-tracker-wrapper {
+      padding: 0;
+    }
+  }
+
+  /* Real-time update animations */
+  .order-tracker-wrapper :global(.status-update) {
+    animation: statusUpdate 0.3s ease-in-out;
+  }
+
+  @keyframes statusUpdate {
+    0% {
+      background-color: #fef3c7;
+    }
+    100% {
+      background-color: transparent;
+    }
+  }
+
+  /* Connection status indicator */
+  .order-tracker-wrapper :global(.connection-status) {
+    @apply flex items-center gap-2 text-sm;
+  }
+
+  .order-tracker-wrapper :global(.connection-indicator) {
+    @apply w-2 h-2 rounded-full;
+  }
+
+  .order-tracker-wrapper :global(.connection-indicator.connected) {
+    @apply bg-green-500;
+  }
+
+  .order-tracker-wrapper :global(.connection-indicator.disconnected) {
+    @apply bg-red-500;
+  }
+</style>

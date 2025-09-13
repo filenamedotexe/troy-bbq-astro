@@ -1,0 +1,92 @@
+---
+// Astro wrapper for the AdminOrderManagement React component
+---
+
+<div id="admin-order-management-container" class="admin-order-management-wrapper">
+  <!-- React component will be mounted here -->
+  <div class="loading-placeholder">
+    <div class="animate-pulse space-y-4">
+      <div class="h-16 bg-gray-200 rounded-lg"></div>
+      <div class="h-32 bg-gray-200 rounded-lg"></div>
+      <div class="space-y-3">
+        <div class="h-20 bg-gray-200 rounded-lg"></div>
+        <div class="h-20 bg-gray-200 rounded-lg"></div>
+        <div class="h-20 bg-gray-200 rounded-lg"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { AdminOrderManagement } from './AdminOrderManagement';
+  import React from 'react';
+  import { createRoot } from 'react-dom/client';
+
+  // Mount the React component when the page loads
+  document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('admin-order-management-container');
+    if (container) {
+      // Remove loading placeholder
+      const placeholder = container.querySelector('.loading-placeholder');
+      if (placeholder) {
+        placeholder.style.display = 'none';
+      }
+
+      const root = createRoot(container);
+      root.render(React.createElement(AdminOrderManagement, {
+        className: 'w-full'
+      }));
+    }
+  });
+</script>
+
+<style>
+  .admin-order-management-wrapper {
+    width: 100%;
+    min-height: 600px;
+  }
+
+  /* Loading placeholder styles */
+  .loading-placeholder {
+    padding: 1rem;
+  }
+
+  /* Ensure proper styling for the React components */
+  .admin-order-management-wrapper :global(.card) {
+    @apply bg-white shadow-sm border border-gray-200 rounded-lg;
+  }
+
+  .admin-order-management-wrapper :global(.badge) {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .admin-order-management-wrapper :global(.button) {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors;
+  }
+
+  .admin-order-management-wrapper :global(.input) {
+    @apply flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm;
+  }
+
+  /* Components use Tailwind classes directly - no circular dependencies */
+
+  .admin-order-management-wrapper :global(.button.size-sm) {
+    @apply px-3 py-1.5 text-sm;
+  }
+
+  /* Table and form styling */
+  .admin-order-management-wrapper :global(select) {
+    @apply flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm;
+  }
+
+  .admin-order-management-wrapper :global(label) {
+    @apply text-sm font-medium text-gray-700;
+  }
+
+  /* Mobile responsive adjustments */
+  @media (max-width: 768px) {
+    .admin-order-management-wrapper {
+      padding: 0;
+    }
+  }
+</style>

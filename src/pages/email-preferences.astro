@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const { url } = Astro;
+const token = url.searchParams.get('token');
+const email = url.searchParams.get('email');
+
+if (!token && !email) {
+  return Astro.redirect('/');
+}
+---
+
+<BaseLayout title="Email Preferences - Troy BBQ">
+  <main class="container mx-auto px-4 py-8">
+    <div id="email-preferences-root" data-token={token} data-email={email}></div>
+  </main>
+
+  <script>
+    import { EmailPreferencesManager } from '../components/email/EmailPreferencesManager';
+    import { createRoot } from 'react-dom/client';
+    import React from 'react';
+
+    const container = document.getElementById('email-preferences-root');
+    if (container) {
+      const token = container.dataset.token;
+      const email = container.dataset.email;
+      
+      const root = createRoot(container);
+      root.render(React.createElement(EmailPreferencesManager, { token, email }));
+    }
+  </script>
+</BaseLayout>

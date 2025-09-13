@@ -2,60 +2,192 @@
 import '../styles/globals.css';
 import HeaderWrapper from '../components/HeaderWrapper.astro';
 import FooterWrapper from '../components/FooterWrapper.astro';
+import SEOHead from '../components/seo/SEOHead.astro';
+import StructuredData from '../components/seo/StructuredData.astro';
 
 export interface Props {
   title?: string;
   description?: string;
   cartItemCount?: number;
+  ogImage?: string;
+  ogType?: 'website' | 'article' | 'business.business';
+  keywords?: string;
+  structuredDataType?: 'restaurant' | 'organization' | 'breadcrumbs' | 'product' | 'local-business';
+  structuredData?: any;
+  noindex?: boolean;
+  pageType?: string;
 }
 
 const { 
   title = "Troy BBQ - Authentic BBQ & Catering", 
   description = "Experience authentic BBQ and professional catering services in Troy, NY. Family-owned since 1985.",
-  cartItemCount = 0
+  cartItemCount = 0,
+  ogImage = "/og-image.jpg",
+  ogType = "business.business",
+  keywords = "BBQ, barbecue, catering, Troy NY, smoked meat, restaurant, authentic BBQ, family owned, food delivery, event catering",
+  structuredDataType = "restaurant",
+  structuredData,
+  noindex = false,
+  pageType
 } = Astro.props;
+
+// Determine if this is the homepage
+const isHomepage = Astro.url.pathname === '/' || pageType === 'homepage';
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content={description} />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{title}</title>
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
     
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={Astro.url} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:image" content="/og-image.jpg" />
+    <!-- Enhanced SEO Meta Tags -->
+    <SEOHead
+      title={title}
+      description={description}
+      canonical={Astro.url.href}
+      ogImage={ogImage}
+      ogType={ogType}
+      keywords={keywords}
+      noindex={noindex}
+    />
     
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={Astro.url} />
-    <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content="/og-image.jpg" />
+    <!-- Structured Data -->
+    <StructuredData 
+      type={structuredDataType} 
+      data={structuredData}
+      pageType={isHomepage ? 'homepage' : undefined}
+    />
     
-    <!-- Preconnect to external domains -->
+    <!-- Performance Optimization -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://api.stripe.com" crossorigin />
+    <link rel="preconnect" href="https://connect.squareup.com" crossorigin />
     
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Critical CSS inlined for better performance -->
+    <style>
+      /* Critical above-the-fold styles */
+      body { 
+        font-family: system-ui, -apple-system, sans-serif; 
+        margin: 0;
+        min-height: 100vh;
+        background-color: hsl(var(--background));
+      }
+      .layout-container { 
+        display: flex; 
+        flex-direction: column; 
+        min-height: 100vh; 
+      }
+      .main-content { 
+        flex: 1; 
+      }
+      /* Prevent layout shift */
+      img { 
+        max-width: 100%; 
+        height: auto; 
+      }
+    </style>
+    
+    <!-- Load fonts with optimal performance -->
+    <link 
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" 
+      rel="stylesheet" 
+      media="print" 
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    </noscript>
+    
+    <!-- Analytics and Performance Monitoring -->
+    <script>
+      // Initialize analytics tracking
+      if (typeof window !== 'undefined') {
+        window.dataLayer = window.dataLayer || [];
+        
+        // Track page view
+        window.dataLayer.push({
+          event: 'page_view',
+          page_title: document.title,
+          page_location: window.location.href,
+          page_path: window.location.pathname
+        });
+      }
+    </script>
   </head>
   <body class="min-h-screen bg-background font-sans antialiased">
-    <div class="flex flex-col min-h-screen">
+    <div class="layout-container flex flex-col min-h-screen">
       <HeaderWrapper cartItemCount={cartItemCount} />
       
-      <main class="flex-grow">
+      <main class="main-content flex-grow">
         <slot />
       </main>
       
       <FooterWrapper />
     </div>
+    
+    <!-- Performance and Analytics Scripts -->
+    <script>
+      // Load analytics and performance monitoring after page load
+      if (typeof window !== 'undefined') {
+        window.addEventListener('load', async () => {
+          try {
+            // Dynamically import analytics and performance modules
+            const { analytics, performanceOptimizer } = await import('/src/lib/analytics.js');
+            const { CoreWebVitalsOptimizer } = await import('/src/lib/performance.js');
+            
+            // Initialize performance optimizations
+            CoreWebVitalsOptimizer.optimizeLCP();
+            CoreWebVitalsOptimizer.optimizeFID();
+            CoreWebVitalsOptimizer.optimizeCLS();
+            
+            // Track initial page load performance
+            analytics.trackPerformanceMetrics();
+            
+            // Set up ongoing monitoring
+            analytics.trackScrollDepth();
+            analytics.trackTimeOnPage();
+            
+          } catch (error) {
+            console.warn('Could not load analytics:', error);
+          }
+        });
+        
+        // Early performance optimizations
+        window.addEventListener('DOMContentLoaded', () => {
+          // Remove loading attribute from above-the-fold images
+          document.querySelectorAll('img[data-priority]').forEach(img => {
+            img.removeAttribute('loading');
+            img.setAttribute('fetchpriority', 'high');
+          });
+          
+          // Set up intersection observer for lazy loading
+          if ('IntersectionObserver' in window) {
+            const lazyImageObserver = new IntersectionObserver((entries) => {
+              entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                  const img = entry.target;
+                  const src = img.dataset.src;
+                  if (src) {
+                    img.src = src;
+                    img.classList.remove('lazy');
+                    lazyImageObserver.unobserve(img);
+                  }
+                }
+              });
+            });
+            
+            document.querySelectorAll('img[data-src]').forEach(img => {
+              lazyImageObserver.observe(img);
+            });
+          }
+        });
+      }
+    </script>
   </body>
 </html>
 

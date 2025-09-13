@@ -1,0 +1,144 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import OrderLookupWrapper from '../../components/orders/OrderLookupWrapper.astro';
+---
+
+<BaseLayout 
+  title="Track Your Order - Troy BBQ" 
+  description="Track your Troy BBQ order in real-time. Get live updates on your order status, estimated delivery time, and more."
+>
+  <main class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4">
+      <!-- Page Header -->
+      <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Track Your Order</h1>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          Enter your email or phone number to track your Troy BBQ order in real-time. 
+          Get live updates on preparation, estimated delivery times, and more.
+        </p>
+      </div>
+
+      <!-- Order Lookup Component -->
+      <OrderLookupWrapper />
+
+      <!-- Features Section -->
+      <div class="mt-16">
+        <div class="text-center mb-8">
+          <h2 class="text-2xl font-semibold text-gray-900 mb-4">Real-Time Order Tracking</h2>
+          <p class="text-gray-600">Stay informed every step of the way</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+          <div class="text-center">
+            <div class="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
+              <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">Live Updates</h3>
+            <p class="text-gray-600">Get real-time notifications as your order moves through each stage of preparation and delivery.</p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
+              <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">Accurate ETAs</h3>
+            <p class="text-gray-600">Know exactly when your order will be ready for pickup or when it will arrive at your door.</p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-16 h-16 mx-auto mb-4 bg-orange-100 rounded-full flex items-center justify-center">
+              <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">Delivery Tracking</h3>
+            <p class="text-gray-600">Track your delivery driver's location and get updates when they're on their way to you.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- How It Works -->
+      <div class="mt-16 bg-white rounded-lg shadow-sm p-8">
+        <div class="text-center mb-8">
+          <h2 class="text-2xl font-semibold text-gray-900 mb-4">How Order Tracking Works</h2>
+          <p class="text-gray-600">Follow your order from pit to plate</p>
+        </div>
+
+        <div class="grid md:grid-cols-5 gap-8">
+          <div class="text-center">
+            <div class="w-12 h-12 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center text-lg font-semibold">1</div>
+            <h4 class="font-semibold mb-2">Order Received</h4>
+            <p class="text-sm text-gray-600">Your order is confirmed and payment is processed</p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-12 h-12 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center text-lg font-semibold text-blue-600">2</div>
+            <h4 class="font-semibold mb-2">Preparing</h4>
+            <p class="text-sm text-gray-600">Our pit masters start preparing your delicious BBQ</p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-12 h-12 mx-auto mb-4 bg-yellow-100 rounded-full flex items-center justify-center text-lg font-semibold text-yellow-600">3</div>
+            <h4 class="font-semibold mb-2">Ready</h4>
+            <p class="text-sm text-gray-600">Your order is ready for pickup or delivery</p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-12 h-12 mx-auto mb-4 bg-purple-100 rounded-full flex items-center justify-center text-lg font-semibold text-purple-600">4</div>
+            <h4 class="font-semibold mb-2">On the Way</h4>
+            <p class="text-sm text-gray-600">Your order is out for delivery (if applicable)</p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-12 h-12 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center text-lg font-semibold text-green-600">5</div>
+            <h4 class="font-semibold mb-2">Delivered</h4>
+            <p class="text-sm text-gray-600">Enjoy your fresh Troy BBQ!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Support -->
+      <div class="mt-16 text-center">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-4">Need Help?</h2>
+        <p class="text-gray-600 mb-6">
+          Can't find your order or having issues? Our team is here to help.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a 
+            href="tel:+15125551234" 
+            class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+            </svg>
+            Call Us
+          </a>
+          <a 
+            href="mailto:support@troybbq.com" 
+            class="inline-flex items-center justify-center px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+            Email Us
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  /* Ensure mobile responsiveness */
+  @media (max-width: 768px) {
+    .container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+</style>

@@ -1,0 +1,217 @@
+---
+import type { Organization, Restaurant, BreadcrumbList, Product, LocalBusiness } from '../../../types/structured-data';
+
+export interface Props {
+  type: 'restaurant' | 'organization' | 'breadcrumbs' | 'product' | 'local-business';
+  data?: any;
+  pageType?: string;
+}
+
+const { type, data, pageType } = Astro.props;
+
+// Base organization data for Troy BBQ
+const baseOrganization: Organization = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Troy BBQ",
+  "alternateName": "Troy Barbecue",
+  "url": "https://troybbq.com",
+  "logo": "https://troybbq.com/logo.png",
+  "description": "Authentic BBQ restaurant and catering services in Troy, NY. Family-owned since 1985.",
+  "foundingDate": "1985",
+  "founders": [
+    {
+      "@type": "Person",
+      "name": "Troy BBQ Founders"
+    }
+  ],
+  "sameAs": [
+    "https://www.facebook.com/troybbq",
+    "https://www.instagram.com/troybbq",
+    "https://www.yelp.com/biz/troy-bbq"
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+1-518-272-8226",
+    "contactType": "customer service",
+    "availableLanguage": "English"
+  }
+};
+
+// Restaurant/Local Business data
+const restaurantData: Restaurant & LocalBusiness = {
+  "@context": "https://schema.org",
+  "@type": ["Restaurant", "LocalBusiness"],
+  "name": "Troy BBQ",
+  "image": "https://troybbq.com/restaurant-interior.jpg",
+  "description": "Authentic BBQ restaurant specializing in smoked meats, traditional sides, and professional catering services. Family-owned and operated since 1985.",
+  "url": "https://troybbq.com",
+  "telephone": "+1-518-272-8226",
+  "email": "info@troybbq.com",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "2455 15th St",
+    "addressLocality": "Troy",
+    "addressRegion": "NY",
+    "postalCode": "12180",
+    "addressCountry": "US"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 42.7284,
+    "longitude": -73.6918
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday"],
+      "opens": "11:00",
+      "closes": "20:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Friday", "Saturday"],
+      "opens": "11:00",
+      "closes": "21:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": "Sunday",
+      "opens": "12:00",
+      "closes": "19:00"
+    }
+  ],
+  "servesCuisine": ["American", "Barbecue", "Southern"],
+  "priceRange": "$$",
+  "acceptsReservations": true,
+  "hasMenu": "https://troybbq.com/menu",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.6",
+    "reviewCount": "127",
+    "bestRating": "5",
+    "worstRating": "1"
+  },
+  "review": [
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Sarah Johnson"
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5",
+        "bestRating": "5"
+      },
+      "reviewBody": "Best BBQ in Troy! The brisket is incredible and their catering service made our event perfect.",
+      "datePublished": "2024-12-15"
+    }
+  ],
+  "paymentAccepted": ["Cash", "Credit Card", "Debit Card"],
+  "currenciesAccepted": "USD",
+  "amenityFeature": [
+    {
+      "@type": "LocationFeatureSpecification",
+      "name": "Parking",
+      "value": true
+    },
+    {
+      "@type": "LocationFeatureSpecification", 
+      "name": "Takeout",
+      "value": true
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      "name": "Catering",
+      "value": true
+    }
+  ]
+};
+
+// Generate structured data based on type
+let structuredData: any;
+
+switch (type) {
+  case 'restaurant':
+    structuredData = restaurantData;
+    break;
+  case 'organization':
+    structuredData = baseOrganization;
+    break;
+  case 'local-business':
+    structuredData = {
+      ...restaurantData,
+      "@type": "LocalBusiness"
+    };
+    break;
+  case 'breadcrumbs':
+    if (data?.breadcrumbs) {
+      structuredData = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": data.breadcrumbs.map((crumb: any, index: number) => ({
+          "@type": "ListItem",
+          "position": index + 1,
+          "name": crumb.name,
+          "item": crumb.url
+        }))
+      };
+    }
+    break;
+  case 'product':
+    if (data?.product) {
+      structuredData = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": data.product.name,
+        "description": data.product.description,
+        "image": data.product.image,
+        "brand": {
+          "@type": "Brand",
+          "name": "Troy BBQ"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": data.product.price,
+          "priceCurrency": "USD",
+          "availability": "https://schema.org/InStock",
+          "seller": {
+            "@type": "Organization",
+            "name": "Troy BBQ"
+          }
+        }
+      };
+    }
+    break;
+  default:
+    structuredData = baseOrganization;
+}
+
+// Add WebSite schema for homepage
+if (pageType === 'homepage') {
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Troy BBQ",
+    "url": "https://troybbq.com",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://troybbq.com/menu?search={search_term_string}",
+      "query-input": "required name=search_term_string"
+    },
+    "publisher": baseOrganization
+  };
+  
+  // Combine website schema with main schema
+  structuredData = [websiteSchema, structuredData];
+}
+---
+
+{structuredData && (
+  Array.isArray(structuredData) 
+    ? structuredData.map((schema: any) => (
+        <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+      ))
+    : <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+)}

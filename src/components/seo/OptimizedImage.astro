@@ -1,0 +1,218 @@
+---
+import { Image } from 'astro:assets';
+
+export interface Props {
+  src: string | ImageMetadata;
+  alt: string;
+  width?: number;
+  height?: number;
+  loading?: 'lazy' | 'eager';
+  decoding?: 'async' | 'sync' | 'auto';
+  priority?: boolean;
+  sizes?: string;
+  class?: string;
+  format?: 'webp' | 'avif' | 'png' | 'jpg' | 'jpeg';
+  quality?: number;
+  densities?: number[];
+  placeholder?: 'blur' | 'none';
+  style?: string;
+}
+
+const {
+  src,
+  alt,
+  width = 800,
+  height = 600,
+  loading = 'lazy',
+  decoding = 'async',
+  priority = false,
+  sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px',
+  class: className = '',
+  format = 'webp',
+  quality = 80,
+  densities = [1, 2],
+  placeholder = 'blur',
+  style = '',
+  ...rest
+} = Astro.props;
+
+// Determine loading strategy based on priority
+const imageLoading = priority ? 'eager' : loading;
+const fetchPriority = priority ? 'high' : 'auto';
+
+// Generate responsive srcset for different screen densities
+const responsiveWidths = densities.map(density => Math.round(width * density));
+
+// Base image optimization settings
+const imageOptions = {
+  quality,
+  format,
+  width,
+  height,
+};
+
+// For external images (strings), we need to handle them differently
+const isExternalImage = typeof src === 'string' && (src.startsWith('http') || src.startsWith('//'));
+
+// Generate blur placeholder data URL
+const generatePlaceholder = (w: number, h: number) => {
+  const canvas = `<svg width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="a" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#f3f4f6"/>
+        <stop offset="100%" style="stop-color:#e5e7eb"/>
+      </linearGradient>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#a)"/>
+  </svg>`;
+  return `data:image/svg+xml;base64,${btoa(canvas)}`;
+};
+
+const placeholderSrc = placeholder === 'blur' ? generatePlaceholder(width, height) : undefined;
+---
+
+{isExternalImage ? (
+  <!-- External image - standard img tag with optimization attributes -->
+  <img
+    src={src as string}
+    alt={alt}
+    width={width}
+    height={height}
+    loading={imageLoading}
+    decoding={decoding}
+    fetchpriority={fetchPriority}
+    sizes={sizes}
+    class={`transition-opacity duration-300 ${className}`}
+    style={`${style}${placeholderSrc ? ` background-image: url('${placeholderSrc}'); background-size: cover;` : ''}`}
+    {...rest}
+  />
+) : (
+  <!-- Local image - use Astro's Image component for full optimization -->
+  <Image
+    src={src}
+    alt={alt}
+    width={width}
+    height={height}
+    densities={densities}
+    loading={imageLoading}
+    decoding={decoding}
+    sizes={sizes}
+    class={`transition-opacity duration-300 ${className}`}
+    style={style}
+    quality={quality}
+    format={format}
+    {...rest}
+  />
+)}
+
+{priority && (
+  <!-- Preload critical images for better LCP -->
+  <link
+    rel="preload"
+    as="image"
+    href={typeof src === 'string' ? src : src.src}
+    fetchpriority="high"
+  />
+)}
+
+<script>
+  // Progressive image loading enhancement
+  document.addEventListener('DOMContentLoaded', () => {
+    // Intersection Observer for lazy loading enhancements
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target as HTMLImageElement;
+          
+          // Fade in effect when image loads
+          img.addEventListener('load', () => {
+            img.style.opacity = '1';
+          });
+          
+          // Remove placeholder background when image loads
+          if (img.style.backgroundImage) {
+            img.addEventListener('load', () => {
+              img.style.backgroundImage = '';
+            });
+          }
+          
+          observer.unobserve(img);
+        }
+      });
+    }, {
+      rootMargin: '50px' // Start loading 50px before image enters viewport
+    });
+
+    // Observe all lazy-loaded images
+    document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+      imageObserver.observe(img);
+    });
+
+    // Image error handling
+    document.querySelectorAll('img').forEach(img => {
+      img.addEventListener('error', (e) => {
+        const target = e.target as HTMLImageElement;
+        
+        // Log error for analytics
+        if (window.analytics) {
+          window.analytics.trackEvent({
+            event: 'image_load_error',
+            category: 'performance',
+            action: 'image_error',
+            label: target.src,
+            custom_parameters: {
+              image_src: target.src,
+              image_alt: target.alt,
+              page_url: window.location.pathname
+            }
+          });
+        }
+        
+        // Replace with placeholder or hide
+        target.style.display = 'none';
+        console.warn('Failed to load image:', target.src);
+      });
+    });
+  });
+</script>
+
+<style>
+  /* Base image styles for better layout stability */
+  img {
+    max-width: 100%;
+    height: auto;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  /* Images with priority should be visible immediately */
+  img[fetchpriority="high"] {
+    opacity: 1;
+  }
+  
+  /* Loaded images */
+  img.loaded {
+    opacity: 1;
+  }
+  
+  /* Aspect ratio containers to prevent layout shift */
+  .aspect-ratio-container {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .aspect-ratio-container::before {
+    content: '';
+    display: block;
+    padding-top: var(--aspect-ratio, 75%); /* Default 4:3 ratio */
+  }
+  
+  .aspect-ratio-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+</style>

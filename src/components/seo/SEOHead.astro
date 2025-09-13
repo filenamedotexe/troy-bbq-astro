@@ -1,0 +1,124 @@
+---
+export interface Props {
+  title?: string;
+  description?: string;
+  canonical?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article' | 'business.business';
+  twitterCard?: 'summary' | 'summary_large_image' | 'app' | 'player';
+  structuredData?: object;
+  keywords?: string;
+  author?: string;
+  publishedTime?: string;
+  modifiedTime?: string;
+  locale?: string;
+  noindex?: boolean;
+  nofollow?: boolean;
+}
+
+const {
+  title = "Troy BBQ - Authentic BBQ & Catering",
+  description = "Experience authentic BBQ and professional catering services in Troy, NY. Family-owned since 1985. Premium smoked meats, catering, and BBQ restaurant.",
+  canonical = Astro.url.href,
+  ogImage = "/og-image.jpg",
+  ogType = "business.business",
+  twitterCard = "summary_large_image",
+  structuredData,
+  keywords = "BBQ, barbecue, catering, Troy NY, smoked meat, restaurant, authentic BBQ, family owned, food delivery, event catering",
+  author = "Troy BBQ",
+  publishedTime,
+  modifiedTime,
+  locale = "en_US",
+  noindex = false,
+  nofollow = false
+} = Astro.props;
+
+// Build robots meta content
+const robots = [];
+if (noindex) robots.push('noindex');
+if (nofollow) robots.push('nofollow');
+const robotsContent = robots.length > 0 ? robots.join(', ') : 'index, follow';
+
+// Ensure absolute URLs
+const canonicalUrl = canonical.startsWith('http') ? canonical : `${Astro.site}${canonical.replace(/^\//, '')}`;
+const ogImageUrl = ogImage.startsWith('http') ? ogImage : `${Astro.site}${ogImage.replace(/^\//, '')}`;
+---
+
+<!-- Primary Meta Tags -->
+<title>{title}</title>
+<meta name="title" content={title} />
+<meta name="description" content={description} />
+<meta name="keywords" content={keywords} />
+<meta name="author" content={author} />
+<meta name="robots" content={robotsContent} />
+<meta name="language" content={locale.split('_')[0]} />
+
+<!-- Canonical URL -->
+<link rel="canonical" href={canonicalUrl} />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content={ogType} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={ogImageUrl} />
+<meta property="og:image:alt" content={title} />
+<meta property="og:locale" content={locale} />
+<meta property="og:site_name" content="Troy BBQ" />
+
+{ogType === 'business.business' && (
+  <>
+    <meta property="business:contact_data:street_address" content="2455 15th St" />
+    <meta property="business:contact_data:locality" content="Troy" />
+    <meta property="business:contact_data:region" content="NY" />
+    <meta property="business:contact_data:postal_code" content="12180" />
+    <meta property="business:contact_data:country_name" content="United States" />
+    <meta property="business:contact_data:phone_number" content="(518) 272-8226" />
+    <meta property="business:contact_data:website" content="https://troybbq.com" />
+  </>
+)}
+
+{publishedTime && <meta property="article:published_time" content={publishedTime} />}
+{modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+
+<!-- Twitter -->
+<meta property="twitter:card" content={twitterCard} />
+<meta property="twitter:url" content={canonicalUrl} />
+<meta property="twitter:title" content={title} />
+<meta property="twitter:description" content={description} />
+<meta property="twitter:image" content={ogImageUrl} />
+<meta property="twitter:image:alt" content={title} />
+<meta name="twitter:creator" content="@TroyBBQ" />
+<meta name="twitter:site" content="@TroyBBQ" />
+
+<!-- Additional Meta Tags for Local Business -->
+<meta name="geo.region" content="US-NY" />
+<meta name="geo.placename" content="Troy" />
+<meta name="geo.position" content="42.7284;-73.6918" />
+<meta name="ICBM" content="42.7284, -73.6918" />
+
+<!-- Theme and Viewport -->
+<meta name="theme-color" content="#8B2635" />
+<meta name="msapplication-navbutton-color" content="#8B2635" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+<!-- Structured Data -->
+{structuredData && (
+  <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+)}
+
+<!-- Preload Critical Resources -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preconnect" href="https://www.google-analytics.com" crossorigin />
+
+<!-- DNS Prefetch for External Domains -->
+<link rel="dns-prefetch" href="//js.stripe.com" />
+<link rel="dns-prefetch" href="//connect.squareup.com" />
+<link rel="dns-prefetch" href="//api.medusajs.com" />
+
+<!-- Security Headers -->
+<meta http-equiv="X-Content-Type-Options" content="nosniff" />
+<meta http-equiv="X-Frame-Options" content="DENY" />
+<meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />

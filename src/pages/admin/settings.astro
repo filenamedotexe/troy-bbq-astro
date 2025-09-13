@@ -1,12 +1,14 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import { isAuthenticated } from '../../lib/auth';
+import AdminLayout from '../../layouts/AdminLayout.astro';
 import AdminSettingsWrapper from '../../components/admin/AdminSettingsWrapper';
+
+// Check authentication first
+if (!isAuthenticated(Astro.request)) {
+  return Astro.redirect('/admin/login');
+}
 ---
 
-<BaseLayout title="Admin Settings - Troy BBQ">
-  <div class="min-h-screen bg-gray-50 py-8">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-      <AdminSettingsWrapper client:load />
-    </div>
-  </div>
-</BaseLayout>
+<AdminLayout title="Admin Settings - Troy BBQ">
+  <AdminSettingsWrapper client:load />
+</AdminLayout>

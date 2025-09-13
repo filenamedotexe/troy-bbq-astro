@@ -1,0 +1,55 @@
+# Troy BBQ - Robots.txt
+# https://troybbq.com/robots.txt
+
+User-agent: *
+Allow: /
+
+# Allow all major search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_astro/
+Disallow: /checkout/success
+Disallow: /checkout/cancel
+
+# Allow important pages
+Allow: /menu
+Allow: /catering
+Allow: /about
+Allow: /contact
+Allow: /cart
+
+# Sitemap location
+Sitemap: https://troybbq.com/sitemap-index.xml
+Sitemap: https://troybbq.com/sitemap-0.xml
+
+# Crawl delay for respectful crawling
+Crawl-delay: 1
+
+# Block aggressive crawlers
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /

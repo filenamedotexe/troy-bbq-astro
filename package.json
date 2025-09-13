@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@astrojs/react": "^4.3.1",
+    "@astrojs/sitemap": "^3.5.1",
     "@astrojs/tailwind": "^6.0.2",
     "@astrojs/vercel": "^8.2.7",
     "@hookform/resolvers": "^5.2.1",
@@ -22,9 +23,12 @@
     "@stripe/react-stripe-js": "^4.0.2",
     "@stripe/stripe-js": "^7.9.0",
     "@tailwindcss/typography": "^0.5.16",
+    "@types/bcryptjs": "^2.4.6",
     "@types/pg": "^8.15.5",
     "astro": "^5.13.7",
+    "astro-compress": "^2.3.8",
     "axios": "^1.12.1",
+    "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.544.0",
@@ -33,10 +37,12 @@
     "react-dom": "^19.1.1",
     "react-hook-form": "^7.62.0",
     "react-square-web-payments-sdk": "^3.2.4-beta.1",
+    "resend": "^4.8.0",
     "squareup": "^1.0.0",
     "stripe": "^18.5.0",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^3.4.17",
+    "web-vitals": "^5.1.0",
     "zod": "^3.25.76"
   }
 }

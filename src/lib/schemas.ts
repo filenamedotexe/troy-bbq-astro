@@ -130,3 +130,140 @@ export type ContactFormInput = z.infer<typeof contactFormSchema>;
 export type CreateCateringAddonInput = z.infer<typeof createCateringAddonSchema>;
 export type UpdateCateringAddonInput = z.infer<typeof updateCateringAddonSchema>;
 export type BulkUpdateAddonsInput = z.infer<typeof bulkUpdateAddonsSchema>;
+
+// Order Tracking Schemas
+export const orderStatusSchema = z.enum(['pending', 'confirmed', 'preparing', 'ready', 'out_for_delivery', 'delivered', 'cancelled']);
+
+export const coordinatesSchema = z.object({
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
+});
+
+export const orderStatusEventSchema = z.object({
+  id: z.string().min(1),
+  orderId: z.string().min(1),
+  status: orderStatusSchema,
+  message: z.string().max(500).optional(),
+  timestamp: z.date(),
+  estimatedTime: z.date().optional(),
+  location: z.object({
+    address: z.string().max(500).optional(),
+    coordinates: coordinatesSchema.optional(),
+  }).optional(),
+  metadata: z.record(z.unknown()).optional(),
+});
+
+export const deliveryAddressSchema = z.object({
+  name: z.string().min(1).max(100),
+  address_1: z.string().min(1).max(255),
+  address_2: z.string().max(255).optional(),
+  city: z.string().min(1).max(100),
+  province: z.string().min(1).max(100),
+  postal_code: z.string().min(1).max(20),
+  phone: z.string().max(20).optional(),
+});
+
+export const orderTrackingDetailsSchema = z.object({
+  id: z.string().min(1),
+  orderNumber: z.string().min(1),
+  customerEmail: z.string().email(),
+  customerPhone: z.string().max(20).optional(),
+  status: orderStatusSchema,
+  currentStatusMessage: z.string().max(500).optional(),
+  estimatedDeliveryTime: z.date().optional(),
+  events: z.array(orderStatusEventSchema),
+  items: z.array(z.object({
+    id: z.string().min(1),
+    title: z.string().min(1).max(255),
+    quantity: z.number().int().min(1),
+    variant_title: z.string().max(255).optional(),
+    thumbnail: z.string().url().optional(),
+  })),
+  deliveryAddress: deliveryAddressSchema.optional(),
+  payment: z.object({
+    total: z.number().int().min(0),
+    currency: z.string().length(3),
+    paymentStatus: z.enum(['pending', 'paid', 'refunded', 'partially_refunded']),
+  }),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  isDelivery: z.boolean(),
+  isCatering: z.boolean().optional(),
+  cateringDetails: z.object({
+    eventDate: z.date(),
+    guestCount: z.number().int().min(1),
+    eventType: z.enum(['corporate', 'private']),
+  }).optional(),
+});
+
+export const orderLookupInputSchema = z.object({
+  identifier: z.string().min(1, "Email or phone number is required").refine((val) => {
+    // Check if it's a valid email or phone number
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[\+]?[\d\s\-\(\)]{10,}$/;
+    return emailRegex.test(val) || phoneRegex.test(val);
+  }, {
+    message: "Must be a valid email or phone number",
+  }),
+  orderNumber: z.string().max(50).optional(),
+});
+
+export const orderStatusUpdateSchema = z.object({
+  orderId: z.string().min(1, "Order ID is required"),
+  status: orderStatusSchema,
+  message: z.string().max(500).optional(),
+  estimatedTime: z.date().optional(),
+  notifyCustomer: z.boolean().default(true),
+  metadata: z.record(z.unknown()).optional(),
+});
+
+export const adminOrderFiltersSchema = z.object({
+  status: z.array(orderStatusSchema).optional(),
+  dateRange: z.object({
+    start: z.date(),
+    end: z.date(),
+  }).optional(),
+  customerSearch: z.string().max(255).optional(),
+  orderType: z.enum(['regular', 'catering', 'all']).optional(),
+  deliveryType: z.enum(['pickup', 'delivery', 'all']).optional(),
+  limit: z.number().int().min(1).max(100).optional().default(20),
+  offset: z.number().int().min(0).optional().default(0),
+});
+
+export const bulkOrderStatusUpdateSchema = z.object({
+  orderIds: z.array(z.string().min(1)).min(1, "At least one order must be selected"),
+  status: orderStatusSchema,
+  message: z.string().max(500).optional(),
+  notifyCustomers: z.boolean().default(true),
+});
+
+export const orderSearchSchema = z.object({
+  query: z.string().min(1, "Search query is required").max(255),
+  filters: adminOrderFiltersSchema.optional(),
+});
+
+export const estimatedTimeUpdateSchema = z.object({
+  orderId: z.string().min(1, "Order ID is required"),
+  estimatedTime: z.date(),
+  reason: z.string().max(500).optional(),
+  notifyCustomer: z.boolean().default(true),
+});
+
+export const customerNotificationSchema = z.object({
+  orderId: z.string().min(1),
+  type: z.enum(['sms', 'email', 'both']),
+  templateId: z.string().optional(),
+  customMessage: z.string().max(500).optional(),
+});
+
+// Type exports for order tracking
+export type OrderStatusInput = z.infer<typeof orderStatusSchema>;
+export type OrderStatusEventInput = z.infer<typeof orderStatusEventSchema>;
+export type OrderTrackingDetailsInput = z.infer<typeof orderTrackingDetailsSchema>;
+export type OrderLookupInput = z.infer<typeof orderLookupInputSchema>;
+export type OrderStatusUpdateInput = z.infer<typeof orderStatusUpdateSchema>;
+export type AdminOrderFiltersInput = z.infer<typeof adminOrderFiltersSchema>;
+export type BulkOrderStatusUpdateInput = z.infer<typeof bulkOrderStatusUpdateSchema>;
+export type OrderSearchInput = z.infer<typeof orderSearchSchema>;
+export type EstimatedTimeUpdateInput = z.infer<typeof estimatedTimeUpdateSchema>;
+export type CustomerNotificationInput = z.infer<typeof customerNotificationSchema>;

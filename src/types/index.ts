@@ -335,3 +335,130 @@ export interface PaymentWorkflowState {
     };
   };
 }
+
+// Order Tracking Types
+export type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'ready' | 'out_for_delivery' | 'delivered' | 'cancelled';
+
+export interface OrderStatusEvent {
+  id: string;
+  orderId: string;
+  status: OrderStatus;
+  message?: string;
+  timestamp: Date;
+  estimatedTime?: Date;
+  location?: {
+    address?: string;
+    coordinates?: {
+      lat: number;
+      lng: number;
+    };
+  };
+  metadata?: Record<string, unknown>;
+}
+
+export interface OrderTrackingDetails {
+  id: string;
+  orderNumber: string;
+  customerEmail: string;
+  customerPhone?: string;
+  status: OrderStatus;
+  currentStatusMessage?: string;
+  estimatedDeliveryTime?: Date;
+  events: OrderStatusEvent[];
+  items: Array<{
+    id: string;
+    title: string;
+    quantity: number;
+    variant_title?: string;
+    thumbnail?: string;
+  }>;
+  deliveryAddress?: {
+    name: string;
+    address_1: string;
+    address_2?: string;
+    city: string;
+    province: string;
+    postal_code: string;
+    phone?: string;
+  };
+  payment: {
+    total: number;
+    currency: string;
+    paymentStatus: 'pending' | 'paid' | 'refunded' | 'partially_refunded';
+  };
+  createdAt: Date;
+  updatedAt: Date;
+  isDelivery: boolean;
+  isCatering?: boolean;
+  cateringDetails?: {
+    eventDate: Date;
+    guestCount: number;
+    eventType: EventType;
+  };
+}
+
+export interface OrderLookupInput {
+  identifier: string; // email or phone
+  orderNumber?: string;
+}
+
+export interface OrderLookupResponse {
+  orders: OrderTrackingDetails[];
+  totalOrders: number;
+}
+
+export interface OrderStatusUpdate {
+  orderId: string;
+  status: OrderStatus;
+  message?: string;
+  estimatedTime?: Date;
+  notifyCustomer: boolean;
+  metadata?: Record<string, unknown>;
+}
+
+export interface OrderStatusTransition {
+  from: OrderStatus;
+  to: OrderStatus;
+  allowedRoles: ('admin' | 'staff' | 'system')[];
+  requiresEstimatedTime?: boolean;
+  autoAdvance?: {
+    afterMinutes: number;
+    conditions?: string[];
+  };
+}
+
+export interface AdminOrderFilters {
+  status?: OrderStatus[];
+  dateRange?: {
+    start: Date;
+    end: Date;
+  };
+  customerSearch?: string;
+  orderType?: ('regular' | 'catering' | 'all');
+  deliveryType?: ('pickup' | 'delivery' | 'all');
+  limit?: number;
+  offset?: number;
+}
+
+export interface AdminOrderListResponse {
+  orders: OrderTrackingDetails[];
+  totalCount: number;
+  statusCounts: Record<OrderStatus, number>;
+  filters: AdminOrderFilters;
+}
+
+export interface RealTimeOrderUpdate {
+  type: 'status_change' | 'estimated_time_update' | 'location_update' | 'new_order';
+  orderId: string;
+  data: Partial<OrderTrackingDetails>;
+  timestamp: Date;
+}
+
+export interface OrderTrackingState {
+  orders: OrderTrackingDetails[];
+  currentOrder: OrderTrackingDetails | null;
+  isLoading: boolean;
+  error: string | null;
+  filters: AdminOrderFilters;
+  realTimeConnection: boolean;
+}
