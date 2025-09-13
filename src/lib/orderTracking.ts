@@ -517,3 +517,8 @@ export function getStatusLabel(status: OrderStatus): string {
 export function getStatusDescription(status: OrderStatus): string {
   return STATUS_CONFIG[status]?.description || '';
 }
+
+// Export standalone function that uses the service
+export function getNextAllowedStatuses(currentStatus: OrderStatus, userRole: string): OrderStatus[] {
+  return orderTrackingService.getNextAllowedStatuses(currentStatus, userRole);
+}

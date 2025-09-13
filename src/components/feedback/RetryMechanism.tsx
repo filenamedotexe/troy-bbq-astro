@@ -493,7 +493,7 @@ export function useRetryState(maxAttempts = 3) {
   
   const canRetry = attempt < maxAttempts && (lastError ? isRetryableError(lastError.type) : true);
   
-  const retry = useCallback(async <T>(operation: () => Promise<T>): Promise<T> => {
+  const retry = useCallback(async (operation: () => Promise<any>): Promise<any> => {
     if (!canRetry) {
       throw new Error('Cannot retry: maximum attempts reached or error is not retryable');
     }

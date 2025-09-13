@@ -132,12 +132,16 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   };
   
   private handleGoHome = (): void => {
-    window.location.href = '/';\n  };
+    window.location.href = '/';
+  };
   
   private handleGoBack = (): void => {
     if (window.history.length > 1) {
       window.history.back();
-    } else {\n      this.handleGoHome();\n    }\n  };
+    } else {
+      this.handleGoHome();
+    }
+  };
   
   private renderErrorFallback(): ReactNode {
     const { error, errorInfo, errorId } = this.state;
