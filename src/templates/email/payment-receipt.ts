@@ -1,4 +1,5 @@
-import { createBaseTemplate, createButton, createPricingTable, emailStyles, BaseTemplateData } from '../../lib/email/base-template';
+import { createBaseTemplate, createButton, createPricingTable, emailStyles } from '../../lib/email/base-template';
+import type { BaseTemplateData } from '../../lib/email/base-template';
 
 export interface PaymentReceiptData extends BaseTemplateData {
   transactionId: string;

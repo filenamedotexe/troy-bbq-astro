@@ -19,7 +19,6 @@ const createMedusaOrder = async (orderData: any) => {
 // Email notification service placeholder
 const sendDepositConfirmationEmail = async (email: string, quoteId: string, amount: number) => {
   // In real implementation, this would send an email via SendGrid, Mailgun, etc.
-  console.log(`Sending deposit confirmation email to ${email} for quote ${quoteId}, amount: $${amount}`);
   return Promise.resolve();
 };
 

@@ -1,4 +1,5 @@
-import { createBaseTemplate, createAlert, emailStyles, BaseTemplateData } from '../../lib/email/base-template';
+import { createBaseTemplate, createAlert, emailStyles } from '../../lib/email/base-template';
+import type { BaseTemplateData } from '../../lib/email/base-template';
 
 export interface OrderStatusUpdateData extends BaseTemplateData {
   orderId: string;

@@ -19,13 +19,11 @@ const createMedusaOrder = async (orderData: any) => {
 // Email notification service placeholder
 const sendBalanceConfirmationEmail = async (email: string, quoteId: string, amount: number) => {
   // In real implementation, this would send an email via SendGrid, Mailgun, etc.
-  console.log(`Sending balance confirmation email to ${email} for quote ${quoteId}, amount: $${amount}`);
   return Promise.resolve();
 };
 
 const sendOrderConfirmationEmail = async (email: string, quote: any) => {
   // In real implementation, this would send a complete order confirmation
-  console.log(`Sending order confirmation email to ${email} for quote ${quote.id}`);
   return Promise.resolve();
 };
 

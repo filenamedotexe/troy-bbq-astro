@@ -1,0 +1,14 @@
+---
+import { isAuthenticated } from '../../lib/auth';
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import CategoryManagementWrapper from '../../components/admin/categories/CategoryManagementWrapper';
+
+// Check authentication first
+if (!isAuthenticated(Astro.request)) {
+  return Astro.redirect('/admin/login');
+}
+---
+
+<AdminLayout title="Category Management - Troy BBQ">
+  <CategoryManagementWrapper client:load />
+</AdminLayout>

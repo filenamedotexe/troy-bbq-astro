@@ -29,9 +29,7 @@ export default function ContactFormWrapper() {
     try {
       // Simulate API submission
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      console.log('Contact form submission:', data);
-      
+
       setSubmitStatus('success');
       reset();
       

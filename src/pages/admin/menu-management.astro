@@ -1,0 +1,14 @@
+---
+import { isAuthenticated } from '../../lib/auth';
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import MenuManagementWrapper from '../../components/admin/products/MenuManagementWrapper';
+
+// Check authentication first
+if (!isAuthenticated(Astro.request)) {
+  return Astro.redirect('/admin/login');
+}
+---
+
+<AdminLayout title="Menu Management - Troy BBQ">
+  <MenuManagementWrapper client:load />
+</AdminLayout>

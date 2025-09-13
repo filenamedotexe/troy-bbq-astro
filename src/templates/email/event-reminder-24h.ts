@@ -1,4 +1,5 @@
-import { createBaseTemplate, createButton, createAlert, emailStyles, BaseTemplateData } from '../../lib/email/base-template';
+import { createBaseTemplate, createButton, createAlert, emailStyles } from '../../lib/email/base-template';
+import type { BaseTemplateData } from '../../lib/email/base-template';
 
 export interface EventReminder24hData extends BaseTemplateData {
   quoteId: string;

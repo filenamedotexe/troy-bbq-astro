@@ -1,4 +1,5 @@
-import { createBaseTemplate, createButton, emailStyles, BaseTemplateData } from '../../lib/email/base-template';
+import { createBaseTemplate, createButton, emailStyles } from '../../lib/email/base-template';
+import type { BaseTemplateData } from '../../lib/email/base-template';
 
 export interface WelcomeData extends BaseTemplateData {
   websiteUrl?: string;

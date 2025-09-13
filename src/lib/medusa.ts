@@ -1,115 +1,134 @@
-// MedusaJS v2 SDK configuration for demo mode
-// In production, uncomment and configure with your actual backend:
+// MedusaJS v2 SDK configuration with real database integration
+// Fallback to actual MedusaJS backend if configured:
 // import Medusa from "@medusajs/js-sdk";
 
 // Default to localhost:9000 for MedusaJS backend
 const MEDUSA_BACKEND_URL = process.env.MEDUSA_BACKEND_URL || "http://localhost:9000";
 const MEDUSA_PUBLISHABLE_KEY = process.env.MEDUSA_PUBLISHABLE_KEY || "";
 
-// Demo mode client - replace with actual MedusaJS client in production
+// Internal API base URL
+const API_BASE_URL = typeof window !== 'undefined'
+  ? window.location.origin
+  : process.env.SITE_URL || 'http://localhost:4005';
+
+// Real database-powered client
 export const medusaClient = {
   store: {
     product: {
       list: async (params?: any) => {
-        // Demo data for development
-        return {
-          products: [
-            {
-              id: 'demo-brisket',
-              title: 'Smoked Beef Brisket',
-              subtitle: 'Tender, slow-smoked for 12 hours',
-              description: 'Our signature brisket, rubbed with our secret spice blend and smoked over hickory for 12 hours until it reaches perfect tenderness.',
-              handle: 'smoked-beef-brisket',
-              is_giftcard: false,
-              status: 'published',
-              thumbnail: '/api/placeholder/400/400',
-              images: [{ id: '1', url: '/api/placeholder/400/400' }],
-              variants: [{
-                id: 'var-brisket-1',
-                title: 'Half Pound',
-                sku: 'BRISKET-HALF',
-                prices: [{ id: 'price-1', amount: 1899, currency_code: 'usd' }],
-                inventory_quantity: 10,
-              }],
-              categories: [{ id: 'cat-beef', name: 'Beef', handle: 'beef' }],
-              collection: { id: 'col-mains', title: 'Main Dishes', handle: 'main-dishes' },
-              tags: [{ id: 'tag-1', value: 'signature' }, { id: 'tag-2', value: 'smoked' }],
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            },
-            {
-              id: 'demo-ribs',
-              title: 'Baby Back Ribs',
-              subtitle: 'Fall-off-the-bone tender',
-              description: 'Premium baby back ribs seasoned with our dry rub and smoked low and slow until they fall off the bone.',
-              handle: 'baby-back-ribs',
-              is_giftcard: false,
-              status: 'published',
-              thumbnail: '/api/placeholder/400/400',
-              variants: [{
-                id: 'var-ribs-1',
-                title: 'Full Rack',
-                sku: 'RIBS-FULL',
-                prices: [{ id: 'price-2', amount: 2499, currency_code: 'usd' }],
-                inventory_quantity: 5,
-              }],
-              categories: [{ id: 'cat-pork', name: 'Pork', handle: 'pork' }],
-              collection: { id: 'col-mains', title: 'Main Dishes', handle: 'main-dishes' },
-              tags: [{ id: 'tag-3', value: 'popular' }],
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            },
-            {
-              id: 'demo-chicken',
-              title: 'Smoked Half Chicken',
-              subtitle: 'Juicy and flavorful',
-              description: 'Half chicken marinated in our special brine and smoked to perfection with a crispy skin and juicy meat.',
-              handle: 'smoked-half-chicken',
-              is_giftcard: false,
-              status: 'published',
-              thumbnail: '/api/placeholder/400/400',
-              variants: [{
-                id: 'var-chicken-1',
-                title: 'Half Chicken',
-                sku: 'CHICKEN-HALF',
-                prices: [{ id: 'price-3', amount: 1399, currency_code: 'usd' }],
-                inventory_quantity: 8,
-              }],
-              categories: [{ id: 'cat-poultry', name: 'Poultry', handle: 'poultry' }],
-              collection: { id: 'col-mains', title: 'Main Dishes', handle: 'main-dishes' },
-              tags: [{ id: 'tag-4', value: 'healthy' }],
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            },
-          ],
-          count: 3,
-          offset: params?.offset || 0,
-          limit: params?.limit || 12,
-        };
+        try {
+          // Build query parameters
+          const searchParams = new URLSearchParams();
+
+          if (params?.q) searchParams.set('q', params.q);
+          if (params?.category_id) {
+            if (Array.isArray(params.category_id)) {
+              params.category_id.forEach((id: string) => searchParams.append('category_id', id));
+            } else {
+              searchParams.set('category_id', params.category_id);
+            }
+          }
+          if (params?.collection_id) {
+            if (Array.isArray(params.collection_id)) {
+              params.collection_id.forEach((id: string) => searchParams.append('collection_id', id));
+            } else {
+              searchParams.set('collection_id', params.collection_id);
+            }
+          }
+          if (params?.tags) {
+            if (Array.isArray(params.tags)) {
+              params.tags.forEach((tag: string) => searchParams.append('tag', tag));
+            } else {
+              searchParams.set('tag', params.tags);
+            }
+          }
+          if (params?.limit) searchParams.set('limit', params.limit.toString());
+          if (params?.offset) searchParams.set('offset', params.offset.toString());
+          if (params?.sort_by) searchParams.set('sort_by', params.sort_by);
+          if (params?.sort_order) searchParams.set('sort_order', params.sort_order);
+
+          const response = await fetch(`${API_BASE_URL}/api/store/products?${searchParams}`);
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          return await response.json();
+        } catch (error) {
+          console.error('Error fetching products from store API:', error);
+          throw new Error('Failed to fetch products');
+        }
       },
       retrieve: async (id: string) => {
-        // Demo product retrieval
-        return {
-          product: {
-            id,
-            title: 'Demo Product',
-            variants: [{ id: 'var-1', prices: [{ amount: 1000, currency_code: 'usd' }] }],
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/store/products/${id}`);
+
+          if (!response.ok) {
+            if (response.status === 404) {
+              throw new Error('Product not found');
+            }
+            throw new Error(`HTTP error! status: ${response.status}`);
           }
-        };
+
+          return await response.json();
+        } catch (error) {
+          console.error('Error fetching product from store API:', error);
+          throw new Error('Failed to fetch product');
+        }
       },
     },
     cart: {
-      create: async () => ({ cart: { id: 'demo-cart', items: [], total: 0 } }),
-      retrieve: async () => ({ cart: { id: 'demo-cart', items: [], total: 0, subtotal: 0, tax_total: 0, shipping_total: 0, discount_total: 0, item_total: 0 } }),
-      createLineItem: async () => ({ cart: { id: 'demo-cart', items: [], total: 0 } }),
-      updateLineItem: async () => ({ cart: { id: 'demo-cart', items: [], total: 0 } }),
-      deleteLineItem: async () => ({ deleted: true, parent: { id: 'demo-cart', items: [], total: 0 } }),
-      update: async () => ({ cart: { id: 'demo-cart', items: [], total: 0 } }),
+      // Real cart operations using CartStorage
+      create: async () => {
+        const { CartStorage } = await import('./cartStorage');
+        const cart = await CartStorage.createCart();
+        return { cart };
+      },
+      retrieve: async (id: string) => {
+        const { CartStorage } = await import('./cartStorage');
+        const cart = await CartStorage.getCart(id);
+        if (!cart) {
+          throw new Error('Cart not found');
+        }
+        return { cart };
+      },
+      createLineItem: async (cartId: string, params: any) => {
+        const { CartStorage } = await import('./cartStorage');
+        const cart = await CartStorage.addLineItem(
+          cartId,
+          params.product_id || 'unknown', // Will be provided by the calling code
+          params.variant_id,
+          params.quantity
+        );
+        return { cart };
+      },
+      updateLineItem: async (cartId: string, lineItemId: string, params: any) => {
+        const { CartStorage } = await import('./cartStorage');
+        const cart = await CartStorage.updateLineItem(cartId, lineItemId, params.quantity);
+        return { cart };
+      },
+      deleteLineItem: async (cartId: string, lineItemId: string) => {
+        const { CartStorage } = await import('./cartStorage');
+        const cart = await CartStorage.removeLineItem(cartId, lineItemId);
+        return {
+          deleted: true,
+          parent: cart
+        };
+      },
+      update: async (cartId: string, params: any) => {
+        const { CartStorage } = await import('./cartStorage');
+        const cart = await CartStorage.getCart(cartId);
+        if (!cart) {
+          throw new Error('Cart not found');
+        }
+        // For now, just return the cart as-is since we're not implementing full cart updates
+        return { cart };
+      },
     },
   },
 };
 
-// Product API service wrapper
+// Product API service wrapper with real database integration
 export class ProductService {
   static async listProducts(params?: {
     limit?: number;
@@ -140,7 +159,7 @@ export class ProductService {
     province?: string;
   }) {
     try {
-      const response = await medusaClient.store.product.retrieve(id, params);
+      const response = await medusaClient.store.product.retrieve(id);
       return response;
     } catch (error) {
       console.error('Error fetching product:', error);
@@ -159,6 +178,54 @@ export class ProductService {
       q: query,
       ...params
     });
+  }
+
+  // New method to get categories
+  static async getCategories(params?: {
+    limit?: number;
+    offset?: number;
+    parent_id?: string;
+  }) {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params?.limit) searchParams.set('limit', params.limit.toString());
+      if (params?.offset) searchParams.set('offset', params.offset.toString());
+      if (params?.parent_id) searchParams.set('parent_id', params.parent_id);
+
+      const response = await fetch(`${API_BASE_URL}/api/store/categories?${searchParams}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      throw new Error('Failed to fetch categories');
+    }
+  }
+
+  // New method to get collections
+  static async getCollections(params?: {
+    limit?: number;
+    offset?: number;
+  }) {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params?.limit) searchParams.set('limit', params.limit.toString());
+      if (params?.offset) searchParams.set('offset', params.offset.toString());
+
+      const response = await fetch(`${API_BASE_URL}/api/store/collections?${searchParams}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching collections:', error);
+      throw new Error('Failed to fetch collections');
+    }
   }
 }
 
@@ -213,6 +280,7 @@ export class CartService {
   static async addToCart(cartId: string, params: {
     variant_id: string;
     quantity: number;
+    product_id?: string;
     metadata?: Record<string, unknown>;
   }) {
     try {

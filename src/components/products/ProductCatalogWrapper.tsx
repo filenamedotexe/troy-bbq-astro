@@ -10,61 +10,87 @@ interface ProductCatalogWrapperProps {
 }
 
 function ProductCatalogContent({ initialProducts = [] }: ProductCatalogWrapperProps) {
+  const [products, setProducts] = useState<Product[]>(initialProducts);
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [collections, setCollections] = useState<ProductCollection[]>([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(initialProducts.length === 0);
   const [isLoadingMeta, setIsLoadingMeta] = useState(true);
   const { addToCart } = useCart();
 
   useEffect(() => {
     loadMetadata();
+    if (initialProducts.length === 0) {
+      loadProducts();
+    }
   }, []);
+
+  const loadProducts = async () => {
+    try {
+      setIsLoadingProducts(true);
+      const response = await ProductService.listProducts({
+        limit: 50,
+        status: ['published']
+      });
+
+      if (response.products) {
+        setProducts(response.products);
+      }
+    } catch (error) {
+      console.error('Error loading products:', error);
+      // Keep empty array as fallback
+    } finally {
+      setIsLoadingProducts(false);
+    }
+  };
 
   const loadMetadata = async () => {
     try {
       setIsLoadingMeta(true);
-      
-      // For now, we'll load categories and collections from the initial products
-      // In a full implementation, you might have separate API endpoints for these
-      
-      // Extract unique categories from products
-      const uniqueCategories = new Map<string, ProductCategory>();
-      const uniqueCollections = new Map<string, ProductCollection>();
 
-      // If we have initial products, extract metadata from them
-      if (initialProducts.length > 0) {
-        initialProducts.forEach(product => {
-          product.categories?.forEach(category => {
-            uniqueCategories.set(category.id, category);
-          });
+      // Load categories and collections from dedicated API endpoints
+      const [categoriesResponse, collectionsResponse] = await Promise.allSettled([
+        ProductService.getCategories({ limit: 100 }),
+        ProductService.getCollections({ limit: 100 })
+      ]);
 
-          if (product.collection) {
-            uniqueCollections.set(product.collection.id, product.collection);
-          }
-        });
+      // Process categories
+      if (categoriesResponse.status === 'fulfilled' && categoriesResponse.value.categories) {
+        setCategories(categoriesResponse.value.categories);
       } else {
-        // Fetch some products to get metadata
-        try {
-          const response = await ProductService.listProducts({
-            limit: 50,
-            fields: 'id,*categories,*collection'
-          });
-
-          response.products?.forEach(product => {
+        console.error('Error loading categories:', categoriesResponse.status === 'rejected' ? categoriesResponse.reason : 'Unknown error');
+        // Fallback: extract categories from loaded products if available
+        if (products.length > 0) {
+          const uniqueCategories = new Map<string, ProductCategory>();
+          products.forEach(product => {
             product.categories?.forEach(category => {
               uniqueCategories.set(category.id, category);
             });
+          });
+          setCategories(Array.from(uniqueCategories.values()));
+        }
+      }
 
+      // Process collections
+      if (collectionsResponse.status === 'fulfilled' && collectionsResponse.value.collections) {
+        setCollections(collectionsResponse.value.collections);
+      } else {
+        console.error('Error loading collections:', collectionsResponse.status === 'rejected' ? collectionsResponse.reason : 'Unknown error');
+        // Fallback: extract collections from loaded products if available
+        if (products.length > 0) {
+          const uniqueCollections = new Map<string, ProductCollection>();
+          products.forEach(product => {
             if (product.collection) {
               uniqueCollections.set(product.collection.id, product.collection);
             }
           });
-        } catch (error) {
-          console.error('Error loading product metadata:', error);
+          setCollections(Array.from(uniqueCollections.values()));
         }
       }
-
-      setCategories(Array.from(uniqueCategories.values()));
-      setCollections(Array.from(uniqueCollections.values()));
+    } catch (error) {
+      console.error('Error loading metadata:', error);
+      // Final fallback: use empty arrays but don't block the UI
+      setCategories([]);
+      setCollections([]);
     } finally {
       setIsLoadingMeta(false);
     }
@@ -73,9 +99,13 @@ function ProductCatalogContent({ initialProducts = [] }: ProductCatalogWrapperPr
   const handleAddToCart = async (productId: string, variantId: string) => {
     try {
       await addToCart(productId, variantId, 1);
+      // Optional: Show success message
+      console.log('Successfully added item to cart');
     } catch (error) {
       console.error('Failed to add to cart:', error);
-      alert('Failed to add item to cart. Please try again.');
+      // More user-friendly error handling
+      const errorMessage = error instanceof Error ? error.message : 'Failed to add item to cart. Please try again.';
+      alert(errorMessage);
     }
   };
 
@@ -85,7 +115,7 @@ function ProductCatalogContent({ initialProducts = [] }: ProductCatalogWrapperPr
     alert(`Product detail page for ${productId} will be implemented in a future phase.`);
   };
 
-  if (isLoadingMeta) {
+  if (isLoadingProducts || isLoadingMeta) {
     return (
       <div className="space-y-6">
         <div className="animate-pulse">
@@ -108,7 +138,7 @@ function ProductCatalogContent({ initialProducts = [] }: ProductCatalogWrapperPr
 
   return (
     <ProductCatalog
-      initialProducts={initialProducts}
+      initialProducts={products}
       categories={categories}
       collections={collections}
       onAddToCart={handleAddToCart}

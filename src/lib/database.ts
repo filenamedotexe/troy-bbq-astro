@@ -29,7 +29,228 @@ import type {
   InventoryAdjustmentInput
 } from '../types';
 
-const sql = neon(process.env.DATABASE_URL || import.meta.env.DATABASE_URL || '');
+// Database configuration with enhanced error handling
+const DATABASE_URL = process.env.DATABASE_URL || import.meta.env.DATABASE_URL || '';
+
+if (!DATABASE_URL) {
+  throw new Error('DATABASE_URL environment variable is required');
+}
+
+// Create connection with optimized configuration for restaurant performance
+const sql = neon(DATABASE_URL, {
+  arrayMode: false,
+  fullResults: false,
+  // Enable connection pooling and caching
+  fetchConnectionCache: true,
+});
+
+// Advanced query caching system for restaurant-speed performance
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+  ttl: number;
+  key: string;
+}
+
+class AdvancedQueryCache {
+  private cache = new Map<string, CacheEntry<any>>();
+  private maxSize = 500; // Restaurant-optimized cache size
+  private defaultTTL = 5 * 60 * 1000; // 5 minutes default
+  private hitCount = 0;
+  private missCount = 0;
+
+  // Different TTL strategies for different data types
+  private ttlStrategies = {
+    admin_settings: 15 * 60 * 1000,      // 15 minutes - settings don't change often
+    catering_quotes: 2 * 60 * 1000,      // 2 minutes - moderate changes
+    catering_addons: 30 * 60 * 1000,     // 30 minutes - rarely change
+    products: 10 * 60 * 1000,            // 10 minutes - menu items change occasionally
+    categories: 60 * 60 * 1000,          // 1 hour - category structure is stable
+    collections: 30 * 60 * 1000,         // 30 minutes - collections change rarely
+    product_variants: 5 * 60 * 1000,     // 5 minutes - prices and inventory change
+    product_images: 60 * 60 * 1000       // 1 hour - images rarely change
+  };
+
+  set<T>(key: string, data: T, customTTL?: number): void {
+    // Determine TTL based on data type
+    const dataType = this.getDataType(key);
+    const ttl = customTTL || this.ttlStrategies[dataType] || this.defaultTTL;
+
+    // LRU eviction when cache is full
+    if (this.cache.size >= this.maxSize) {
+      const oldestKey = Array.from(this.cache.keys())[0];
+      this.cache.delete(oldestKey);
+    }
+
+    this.cache.set(key, {
+      data,
+      timestamp: Date.now(),
+      ttl,
+      key
+    });
+  }
+
+  get<T>(key: string): T | null {
+    const entry = this.cache.get(key);
+
+    if (!entry) {
+      this.missCount++;
+      return null;
+    }
+
+    // Check TTL
+    if (Date.now() - entry.timestamp > entry.ttl) {
+      this.cache.delete(key);
+      this.missCount++;
+      return null;
+    }
+
+    this.hitCount++;
+    return entry.data as T;
+  }
+
+  invalidate(pattern: string): void {
+    const keysToDelete = Array.from(this.cache.keys())
+      .filter(key => key.includes(pattern));
+
+    keysToDelete.forEach(key => this.cache.delete(key));
+  }
+
+  invalidateByPrefix(prefix: string): void {
+    const keysToDelete = Array.from(this.cache.keys())
+      .filter(key => key.startsWith(prefix));
+
+    keysToDelete.forEach(key => this.cache.delete(key));
+  }
+
+  clear(): void {
+    this.cache.clear();
+    this.hitCount = 0;
+    this.missCount = 0;
+  }
+
+  getStats() {
+    const totalRequests = this.hitCount + this.missCount;
+    return {
+      size: this.cache.size,
+      hitRate: totalRequests > 0 ? (this.hitCount / totalRequests) * 100 : 0,
+      hitCount: this.hitCount,
+      missCount: this.missCount,
+      totalRequests
+    };
+  }
+
+  private getDataType(key: string): keyof typeof this.ttlStrategies {
+    if (key.includes('admin_settings')) return 'admin_settings';
+    if (key.includes('catering_quotes')) return 'catering_quotes';
+    if (key.includes('catering_addons')) return 'catering_addons';
+    if (key.includes('product_variants')) return 'product_variants';
+    if (key.includes('product_images')) return 'product_images';
+    if (key.includes('products')) return 'products';
+    if (key.includes('categories')) return 'categories';
+    if (key.includes('collections')) return 'collections';
+    return 'products'; // default
+  }
+
+  // Preload common queries for restaurant operations
+  async preloadCommonQueries(dbService: DatabaseService): Promise<void> {
+    try {
+      // Preload active catering addons (used in quotes)
+      await dbService.getCateringAddons(true);
+
+      // Preload admin settings (used throughout app)
+      await dbService.getAdminSettings();
+
+      // Preload active categories (used in menu navigation)
+      await dbService.listCategories({ is_active: true, limit: 100 });
+
+      console.log('[Cache] Preloaded common restaurant queries');
+    } catch (error) {
+      console.error('[Cache] Failed to preload queries:', error);
+    }
+  }
+}
+
+// Global cache instance optimized for restaurant operations
+const queryCache = new AdvancedQueryCache();
+
+// Query optimization wrapper with restaurant-specific patterns
+async function withCache<T>(
+  key: string,
+  queryFn: () => Promise<T>,
+  customTTL?: number,
+  skipCache = false
+): Promise<T> {
+  // Skip cache for real-time operations (orders, payments)
+  if (skipCache || key.includes('payment') || key.includes('order_status')) {
+    return queryFn();
+  }
+
+  // Check cache first
+  const cached = queryCache.get<T>(key);
+  if (cached !== null) {
+    return cached;
+  }
+
+  // Execute query and cache result
+  const result = await queryFn();
+  queryCache.set(key, result, customTTL);
+
+  return result;
+}
+
+// Database health check and retry logic
+class DatabaseHealthCheck {
+  private static lastHealthCheck = 0;
+  private static readonly HEALTH_CHECK_INTERVAL = 30000; // 30 seconds
+  private static isHealthy = true;
+
+  static async checkHealth(): Promise<boolean> {
+    const now = Date.now();
+    if (now - this.lastHealthCheck < this.HEALTH_CHECK_INTERVAL && this.isHealthy) {
+      return this.isHealthy;
+    }
+
+    try {
+      await sql`SELECT 1`;
+      this.isHealthy = true;
+      this.lastHealthCheck = now;
+      return true;
+    } catch (error) {
+      console.error('Database health check failed:', error);
+      this.isHealthy = false;
+      return false;
+    }
+  }
+
+  static async withRetry<T>(operation: () => Promise<T>, maxRetries = 3): Promise<T> {
+    let lastError: Error;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        // Check health before operation
+        if (!(await this.checkHealth())) {
+          throw new Error('Database is not healthy');
+        }
+
+        return await operation();
+      } catch (error) {
+        lastError = error as Error;
+        console.error(`Database operation failed (attempt ${attempt}/${maxRetries}):`, error);
+
+        if (attempt === maxRetries) {
+          break;
+        }
+
+        // Exponential backoff
+        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+
+    throw new Error(`Database operation failed after ${maxRetries} attempts: ${lastError!.message}`);
+  }
+}
 
 export class DatabaseService {
   // Add transaction support for atomic operations
@@ -111,25 +332,35 @@ export class DatabaseService {
     }
   }
   async getAdminSettings(): Promise<AdminSettings | null> {
-    try {
-      const result = await sql`
-        SELECT config FROM admin_settings ORDER BY id LIMIT 1
-      `;
-      
-      return result[0]?.config || null;
-    } catch (error) {
-      console.error('Error fetching admin settings:', error);
-      throw new Error('Failed to fetch admin settings');
-    }
+    return DatabaseHealthCheck.withRetry(async () => {
+      return withCache(
+        'admin_settings:main',
+        async () => {
+          try {
+            const result = await sql`
+              SELECT config FROM admin_settings ORDER BY id LIMIT 1
+            `;
+
+            return result[0]?.config || null;
+          } catch (error) {
+            console.error('Error fetching admin settings:', error);
+            throw new Error('Failed to fetch admin settings');
+          }
+        }
+      );
+    });
   }
 
   async updateAdminSettings(settings: AdminSettings): Promise<void> {
     try {
       await sql`
-        UPDATE admin_settings 
+        UPDATE admin_settings
         SET config = ${JSON.stringify(settings)}, updated_at = NOW()
         WHERE id = (SELECT id FROM admin_settings ORDER BY id LIMIT 1)
       `;
+
+      // Invalidate cache after update
+      queryCache.invalidate('admin_settings');
     } catch (error) {
       console.error('Error updating admin settings:', error);
       throw new Error('Failed to update admin settings');
@@ -290,24 +521,29 @@ export class DatabaseService {
   }
 
   async getCateringAddons(activeOnly = true): Promise<CateringAddon[]> {
-    try {
-      const result = activeOnly
-        ? await sql`SELECT * FROM catering_addons WHERE is_active = true ORDER BY category, name`
-        : await sql`SELECT * FROM catering_addons ORDER BY category, name`;
+    return withCache(
+      `catering_addons:${activeOnly ? 'active' : 'all'}`,
+      async () => {
+        try {
+          const result = activeOnly
+            ? await sql`SELECT * FROM catering_addons WHERE is_active = true ORDER BY category, name`
+            : await sql`SELECT * FROM catering_addons ORDER BY category, name`;
 
-      return result.map((row: DatabaseCateringAddon) => ({
-        id: row.id,
-        name: row.name,
-        description: row.description,
-        priceCents: row.price_cents,
-        isActive: row.is_active,
-        category: row.category,
-        createdAt: row.created_at
-      }));
-    } catch (error) {
-      console.error('Error fetching catering addons:', error);
-      throw new Error('Failed to fetch catering addons');
-    }
+          return result.map((row: DatabaseCateringAddon) => ({
+            id: row.id,
+            name: row.name,
+            description: row.description,
+            priceCents: row.price_cents,
+            isActive: row.is_active,
+            category: row.category,
+            createdAt: row.created_at
+          }));
+        } catch (error) {
+          console.error('Error fetching catering addons:', error);
+          throw new Error('Failed to fetch catering addons');
+        }
+      }
+    );
   }
 
   async createCateringAddon(addon: Omit<CateringAddon, 'id' | 'createdAt'>): Promise<string> {
@@ -990,10 +1226,14 @@ export class DatabaseService {
       // Remove existing category relationships
       await sql`DELETE FROM product_category_relations WHERE product_id = ${productId}`;
 
-      // Add new category relationships
+      // Add new category relationships using parameterized queries
       if (categoryIds.length > 0) {
-        const values = categoryIds.map(categoryId => `('${productId}', '${categoryId}')`).join(', ');
-        await sql`INSERT INTO product_category_relations (product_id, category_id) VALUES ${sql.unsafe(values)}`;
+        for (const categoryId of categoryIds) {
+          await sql`
+            INSERT INTO product_category_relations (product_id, category_id)
+            VALUES (${productId}, ${categoryId})
+          `;
+        }
       }
     } catch (error) {
       console.error('Error setting product categories:', error);
@@ -1006,10 +1246,14 @@ export class DatabaseService {
       // Remove existing collection relationships
       await sql`DELETE FROM product_collection_relations WHERE product_id = ${productId}`;
 
-      // Add new collection relationships
+      // Add new collection relationships using parameterized queries
       if (collectionIds.length > 0) {
-        const values = collectionIds.map(collectionId => `('${productId}', '${collectionId}')`).join(', ');
-        await sql`INSERT INTO product_collection_relations (product_id, collection_id) VALUES ${sql.unsafe(values)}`;
+        for (const collectionId of collectionIds) {
+          await sql`
+            INSERT INTO product_collection_relations (product_id, collection_id)
+            VALUES (${productId}, ${collectionId})
+          `;
+        }
       }
     } catch (error) {
       console.error('Error setting product collections:', error);

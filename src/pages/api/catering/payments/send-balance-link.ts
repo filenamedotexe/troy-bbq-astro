@@ -5,9 +5,6 @@ import { z } from 'zod';
 // Email service placeholder - in real implementation, use SendGrid, Mailgun, etc.
 const sendEmail = async (to: string, subject: string, htmlContent: string) => {
   // This would be the actual email sending implementation
-  console.log(`Sending email to: ${to}`);
-  console.log(`Subject: ${subject}`);
-  console.log(`Content: ${htmlContent.substring(0, 100)}...`);
   return Promise.resolve({ messageId: `msg_${Date.now()}` });
 };
 

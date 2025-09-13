@@ -181,15 +181,25 @@ export class OrderTrackingService {
     const transition = ORDER_STATUS_TRANSITIONS.find(t => t.from === from && t.to === to);
     if (!transition) return false;
     
-    return transition.allowedRoles.includes(userRole as any);
+    // Type-safe role checking
+    const validRoles: ('admin' | 'staff' | 'system')[] = ['admin', 'staff', 'system'];
+    const typedUserRole = validRoles.find(role => role === userRole);
+
+    return typedUserRole ? transition.allowedRoles.includes(typedUserRole) : false;
   }
 
   /**
    * Get the next allowed statuses for a given current status
    */
   getNextAllowedStatuses(currentStatus: OrderStatus, userRole: string): OrderStatus[] {
+    // Type-safe role checking
+    const validRoles: ('admin' | 'staff' | 'system')[] = ['admin', 'staff', 'system'];
+    const typedUserRole = validRoles.find(role => role === userRole);
+
+    if (!typedUserRole) return [];
+
     return ORDER_STATUS_TRANSITIONS
-      .filter(t => t.from === currentStatus && t.allowedRoles.includes(userRole as any))
+      .filter(t => t.from === currentStatus && t.allowedRoles.includes(typedUserRole))
       .map(t => t.to);
   }
 
@@ -474,17 +484,14 @@ export class OrderTrackingService {
   // Private helper methods
   private async saveStatusEvent(event: OrderStatusEvent): Promise<void> {
     // In a real implementation, save to database
-    console.log('Saving status event:', event);
   }
 
   private async updateOrderInDatabase(orderId: string, updates: Partial<OrderTrackingDetails>): Promise<void> {
     // In a real implementation, update in database
-    console.log('Updating order in database:', orderId, updates);
   }
 
   private async sendCustomerNotification(orderId: string, event: OrderStatusEvent): Promise<void> {
     // In a real implementation, send SMS/email notification
-    console.log('Sending customer notification:', orderId, event);
   }
 }
 

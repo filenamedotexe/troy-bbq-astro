@@ -17,20 +17,32 @@ const { title } = Astro.props;
           <div class="flex items-center space-x-4">
             <h1 class="text-2xl font-bold text-gray-900">Troy BBQ Admin</h1>
             <nav class="flex space-x-4">
-              <a 
-                href="/admin/settings" 
+              <a
+                href="/admin/products"
+                class="text-gray-600 hover:text-orange-600 px-3 py-2 rounded-md text-sm font-medium"
+              >
+                Products
+              </a>
+              <a
+                href="/admin/categories"
+                class="text-gray-600 hover:text-orange-600 px-3 py-2 rounded-md text-sm font-medium"
+              >
+                Categories
+              </a>
+              <a
+                href="/admin/settings"
                 class="text-gray-600 hover:text-orange-600 px-3 py-2 rounded-md text-sm font-medium"
               >
                 Settings
               </a>
-              <a 
-                href="/admin/quotes" 
+              <a
+                href="/admin/quotes"
                 class="text-gray-600 hover:text-orange-600 px-3 py-2 rounded-md text-sm font-medium"
               >
                 Quotes
               </a>
-              <a 
-                href="/admin/catering-addons" 
+              <a
+                href="/admin/catering-addons"
                 class="text-gray-600 hover:text-orange-600 px-3 py-2 rounded-md text-sm font-medium"
               >
                 Catering Add-ons

@@ -1,4 +1,5 @@
-import { createBaseTemplate, createAlert, createPricingTable, emailStyles, BaseTemplateData } from '../../lib/email/base-template';
+import { createBaseTemplate, createAlert, createPricingTable, emailStyles } from '../../lib/email/base-template';
+import type { BaseTemplateData } from '../../lib/email/base-template';
 
 export interface AdminPaymentReceivedData extends BaseTemplateData {
   quoteId: string;

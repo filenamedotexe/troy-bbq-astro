@@ -113,6 +113,7 @@ export function CartProvider({ children }: CartProviderProps) {
         const { cart } = await CartService.addToCart(state.cart.id, {
           variant_id: variantId,
           quantity,
+          product_id: productId,
         });
         setState(prev => ({ ...prev, cart, isLoading: false }));
       }

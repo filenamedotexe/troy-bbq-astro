@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Troy BBQ - Offline</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1810 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .offline-container {
+            max-width: 600px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .offline-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            opacity: 0.7;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #ff6b35;
+        }
+
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .retry-btn {
+            background: #ff6b35;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .retry-btn:hover {
+            background: #e55a2b;
+            transform: translateY(-2px);
+        }
+
+        .offline-features {
+            margin-top: 40px;
+            text-align: left;
+        }
+
+        .offline-features h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #ff6b35;
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-list li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            opacity: 0.8;
+        }
+
+        .feature-list li:before {
+            content: "🔥";
+            position: absolute;
+            left: 0;
+            top: 10px;
+        }
+
+        .network-status {
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(255, 107, 53, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 107, 53, 0.2);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff6b35;
+            margin-right: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .offline-actions {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: transparent;
+            color: #ff6b35;
+            border: 2px solid #ff6b35;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: #ff6b35;
+            color: white;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            p { font-size: 1rem; }
+            .offline-container { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="40" stroke="#ff6b35" stroke-width="4" fill="none" opacity="0.3"/>
+                <path d="M30 50h40M50 30v40" stroke="#ff6b35" stroke-width="4" stroke-linecap="round"/>
+                <circle cx="50" cy="50" r="25" stroke="#ff6b35" stroke-width="2" fill="none" opacity="0.6"/>
+            </svg>
+        </div>
+
+        <h1>You're Offline</h1>
+        <p>Don't worry! You can still browse our cached menu and restaurant information. We'll automatically reconnect when your internet is back.</p>
+
+        <button class="retry-btn" onclick="window.location.reload()">
+            Try Again
+        </button>
+
+        <div class="network-status">
+            <span class="status-indicator"></span>
+            <span id="connection-status">Checking connection...</span>
+        </div>
+
+        <div class="offline-features">
+            <h2>Available Offline:</h2>
+            <ul class="feature-list">
+                <li>Browse our BBQ menu and pricing</li>
+                <li>View restaurant information and hours</li>
+                <li>Read about our story and team</li>
+                <li>Contact information and directions</li>
+                <li>Your cart items are saved locally</li>
+            </ul>
+        </div>
+
+        <div class="offline-actions">
+            <a href="/" class="action-btn">Home</a>
+            <a href="/menu" class="action-btn">Menu</a>
+            <a href="/about" class="action-btn">About</a>
+            <a href="/contact" class="action-btn">Contact</a>
+        </div>
+    </div>
+
+    <script>
+        // Monitor connection status
+        function updateConnectionStatus() {
+            const statusElement = document.getElementById('connection-status');
+            const statusIndicator = document.querySelector('.status-indicator');
+
+            if (navigator.onLine) {
+                statusElement.textContent = 'Connection restored! Refreshing...';
+                statusIndicator.style.background = '#4ade80';
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                statusElement.textContent = 'No internet connection';
+                statusIndicator.style.background = '#ff6b35';
+            }
+        }
+
+        // Check connection status on load
+        updateConnectionStatus();
+
+        // Listen for connection changes
+        window.addEventListener('online', updateConnectionStatus);
+        window.addEventListener('offline', updateConnectionStatus);
+
+        // Retry connection every 30 seconds
+        setInterval(() => {
+            if (navigator.onLine) {
+                updateConnectionStatus();
+            }
+        }, 30000);
+
+        // Service Worker registration check
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.ready.then(registration => {
+                console.log('Service Worker is ready:', registration);
+            });
+        }
+    </script>
+</body>
+</html>
